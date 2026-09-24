@@ -1,0 +1,21 @@
+{
+  "name": "connecteur-sage-shopify",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Connecteur Sage 100 (SODICO) <-> Shopify B2B",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "produits": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-produits.js",
+    "commandes": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-commandes.js",
+    "verifier": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-verifier.js",
+    "stocks": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-stocks.js",
+    "synchro": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-synchro.js"
+  },
+  "dependencies": {
+    "msnodesqlv8": "^5.5.0",
+    "mssql": "^12.7.2"
+  }
+}

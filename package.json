@@ -12,10 +12,17 @@
     "commandes": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-commandes.js",
     "verifier": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-verifier.js",
     "stocks": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-stocks.js",
-    "synchro": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-synchro.js"
+    "synchro": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-synchro.js",
+    "resume": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-resume.js",
+    "test-email": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-test-email.js",
+    "interface": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-interface.js",
+    "commandes-sage": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-commandes-sage.js",
+    "commandes-mode": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-commandes-mode.js",
+    "test": "node --test \"test/*.test.js\""
   },
   "dependencies": {
     "msnodesqlv8": "^5.5.0",
-    "mssql": "^12.7.2"
+    "mssql": "^12.7.2",
+    "nodemailer": "^10.0.11"
   }
 }

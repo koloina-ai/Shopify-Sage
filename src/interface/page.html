@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connecteur Sage → Shopify</title>
+<style>
+  :root {
+    --fond: #f4f5f7; --carte: #fff; --texte: #1f2328; --doux: #656d76; --bord: #d8dee4;
+    --vert: #1a7f37; --vert-fond: #e6f4ea; --rouge: #c62828; --rouge-fond: #fdecea;
+    --orange: #b35900; --orange-fond: #fff4e5; --bleu: #0b5cad; --bleu-fond: #e8f1fb;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--texte); font: 15px/1.5 "Segoe UI", system-ui, sans-serif; }
+  header { background: #16324f; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+  header small { opacity: .75; }
+  main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; display: grid; gap: 16px; }
+  section { background: var(--carte); border: 1px solid var(--bord); border-radius: 10px; padding: 18px 20px; }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  .etat { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; border-left: 8px solid var(--doux); }
+  .etat.ok { border-left-color: var(--vert); background: var(--vert-fond); }
+  .etat.ko { border-left-color: var(--rouge); background: var(--rouge-fond); }
+  .etat.alerte { border-left-color: var(--orange); background: var(--orange-fond); }
+  .etat.encours { border-left-color: var(--bleu); background: var(--bleu-fond); }
+  .pastille { font-size: 40px; line-height: 1; }
+  .etat .texte { flex: 1; min-width: 260px; }
+  .etat .titre { font-size: 20px; font-weight: 600; }
+  .etat .detail { color: var(--doux); }
+  .diag { margin-top: 10px; padding: 10px 12px; background: #fff; border-radius: 8px; border: 1px solid var(--bord); }
+  button { font: inherit; border: 0; border-radius: 8px; padding: 12px 20px; cursor: pointer; background: var(--bleu); color: #fff; font-weight: 600; }
+  button:disabled { background: #9aa4ae; cursor: wait; }
+  .chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .chiffre { border: 1px solid var(--bord); border-radius: 8px; padding: 12px; }
+  .chiffre b { display: block; font-size: 26px; }
+  .chiffre span { color: var(--doux); font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--bord); vertical-align: top; }
+  th { font-size: 13px; color: var(--doux); font-weight: 600; }
+  td.nombre { text-align: right; font-weight: 600; white-space: nowrap; }
+  .barre { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+  input[type=search] { font: inherit; padding: 8px 10px; border: 1px solid var(--bord); border-radius: 8px; min-width: 260px; flex: 1; }
+  a.bouton { display: inline-block; padding: 8px 14px; border: 1px solid var(--bleu); color: var(--bleu); border-radius: 8px; text-decoration: none; font-weight: 600; }
+  .defile { max-height: 420px; overflow: auto; border: 1px solid var(--bord); border-radius: 8px; }
+  .defile table th { position: sticky; top: 0; background: #fafbfc; }
+  .ok-txt { color: var(--vert); font-weight: 600; } .ko-txt { color: var(--rouge); font-weight: 600; }
+  details summary { cursor: pointer; }
+  pre { background: #f6f8fa; padding: 10px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; margin: 8px 0 0; }
+  .vide { color: var(--doux); font-style: italic; }
+  .note { color: var(--doux); font-size: 13px; }
+  ul.liste { margin: 6px 0 0; padding-left: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Connecteur Sage 100 → Shopify <small>· SODICO</small></h1>
+  <small id="maj">Chargement…</small>
+</header>
+
+<main>
+  <section id="etat" class="etat">
+    <div class="pastille" id="pastille">⏳</div>
+    <div class="texte">
+      <div class="titre" id="etat-titre">Chargement…</div>
+      <div class="detail" id="etat-detail"></div>
+      <div id="etat-diag"></div>
+    </div>
+    <div>
+      <button id="bouton-synchro" type="button">Synchroniser maintenant</button>
+      <div class="note" id="bouton-note" style="margin-top:6px;max-width:260px"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sur la boutique</h2>
+    <div class="chiffres" id="chiffres-boutique"></div>
+    <p class="note" id="mode-commandes" style="margin:12px 0 0"></p>
+  </section>
+
+  <section>
+    <h2>Changements envoyés à Shopify — dernières 24 heures</h2>
+    <div class="chiffres" id="chiffres-changements"></div>
+    <div id="retires"></div>
+  </section>
+
+  <section>
+    <h2>Articles « publiés » dans Sage mais absents de la boutique</h2>
+    <p class="note" id="bloques-intro">Chargement…</p>
+    <table id="bloques-raisons"></table>
+    <details id="bloques-details" style="margin-top:14px">
+      <summary>Voir la liste des articles</summary>
+      <div class="barre" style="margin-top:10px">
+        <input type="search" id="recherche" placeholder="Rechercher une référence ou une désignation…">
+        <a class="bouton" href="/api/bloques.csv">Télécharger pour Excel</a>
+      </div>
+      <div class="defile"><table id="bloques-liste"></table></div>
+      <p class="note" id="bloques-compte"></p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Historique des synchronisations — 48 dernières heures</h2>
+    <div class="defile"><table id="historique"></table></div>
+  </section>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const fmtHeure = (d) => new Date(d).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  const fmtNombre = (n) => (n ?? '—').toLocaleString('fr-FR');
+
+  function ilYa(minutes) {
+    if (minutes === null || minutes === undefined) return 'jamais';
+    if (minutes < 1) return "à l'instant";
+    if (minutes < 60) return `il y a ${minutes} min`;
+    const h = Math.floor(minutes / 60);
+    return h < 48 ? `il y a ${h} h ${String(minutes % 60).padStart(2, '0')}` : `il y a ${Math.floor(h / 24)} jours`;
+  }
+
+  // Construction d'éléments sans innerHTML (les textes viennent de Sage : pas d'injection possible)
+  function el(tag, attrs = {}, ...enfants) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) k === 'class' ? (e.className = v) : e.setAttribute(k, v);
+    for (const c of enfants.flat()) if (c !== null && c !== undefined) e.append(c instanceof Node ? c : String(c));
+    return e;
+  }
+  const chiffre = (valeur, libelle) => el('div', { class: 'chiffre' }, el('b', {}, fmtNombre(valeur)), el('span', {}, libelle));
+
+  async function api(chemin, options) {
+    const r = await fetch(chemin, options);
+    const corps = await r.json().catch(() => ({}));
+    if (!r.ok && r.status !== 409) throw new Error(corps.message || `Erreur ${r.status}`);
+    return Array.isArray(corps) ? corps : { statut: r.status, ...corps };
+  }
+
+  let enCours = false;
+
+  async function chargerEtat() {
+    const e = await api('/api/etat');
+    enCours = Boolean(e.enCours);
+    const carte = $('etat');
+    const diag = $('etat-diag');
+    diag.replaceChildren();
+
+    if (e.enCours) {
+      carte.className = 'etat encours'; $('pastille').textContent = '🔄';
+      $('etat-titre').textContent = 'Synchronisation en cours…';
+      $('etat-detail').textContent = `Lancée le ${fmtHeure(e.enCours.depuis)}. La page se met à jour toute seule.`;
+    } else if (e.dernier && !e.dernier.ok) {
+      carte.className = 'etat ko'; $('pastille').textContent = '🔴';
+      $('etat-titre').textContent = 'La dernière synchronisation a échoué';
+      $('etat-detail').textContent =
+        `${fmtHeure(e.dernier.date)} (${ilYa(e.minutesDepuis)})` +
+        (e.panneDepuis ? ` · problème depuis le ${fmtHeure(e.panneDepuis)}` : '') +
+        ' · la boutique n\'est plus mise à jour tant que ce n\'est pas réglé.';
+      for (const d of e.dernier.diagnostics) {
+        diag.append(el('div', { class: 'diag' }, el('b', {}, 'Problème : '), d.probleme, el('br'), el('b', {}, 'Que faire : '), d.action));
+      }
+    } else if (e.enRetard) {
+      carte.className = 'etat alerte'; $('pastille').textContent = '🟠';
+      $('etat-titre').textContent = e.dernier ? 'Aucune synchronisation récente' : 'Aucune synchronisation dans les dernières 24 heures';
+      $('etat-detail').textContent =
+        (e.dernier ? `Dernière synchronisation réussie ${ilYa(e.minutesDepuis)} (${fmtHeure(e.dernier.date)}). ` : '') +
+        'La synchronisation automatique est peut-être arrêtée : prévenir l\'équipe technique.';
+    } else {
+      carte.className = 'etat ok'; $('pastille').textContent = '🟢';
+      $('etat-titre').textContent = 'Tout fonctionne';
+      $('etat-detail').textContent =
+        `Dernière synchronisation ${ilYa(e.minutesDepuis)} (${fmtHeure(e.dernier.date)}) · ` +
+        `${e.passages24h.total} synchronisation(s) sur 24 h, ${e.passages24h.echecs} en échec.`;
+    }
+
+    const bouton = $('bouton-synchro');
+    bouton.disabled = enCours;
+    bouton.textContent = enCours ? 'Synchronisation en cours…' : 'Synchroniser maintenant';
+    $('bouton-note').textContent = enCours ? '' : 'Envoie tout de suite les derniers changements de Sage, sans attendre le prochain passage automatique.';
+
+    const v = e.vente || {};
+    $('chiffres-boutique').replaceChildren(
+      chiffre(v.actifs, 'produits en vente'),
+      chiffre(v.brouillons, 'produits retirés de la vente (brouillon)'),
+      ...(v.ignores ? [chiffre(v.ignores, 'produits protégés (étiquette sage-ignorer)')] : []),
+      ...(v.erreur ? [el('p', { class: 'note' }, 'Shopify injoignable pour le moment : chiffres indisponibles.')] : []),
+    );
+    const modes = {
+      off: 'désactivée',
+      tampon: 'déposées dans la zone tampon, puis intégrées dans Sage par M2I (option A)',
+      'objets-metiers': e.commandes.simulation ? "option B en SIMULATION : rien n'est créé dans Sage" : 'créées directement dans Sage (option B)',
+    };
+    $('mode-commandes').textContent = `Commandes Shopify vers Sage : ${modes[e.commandes.mode] ?? e.commandes.mode}`;
+    $('maj').textContent = `Mis à jour à ${new Date().toLocaleTimeString('fr-FR', { timeStyle: 'short' })}`;
+  }
+
+  async function chargerChangements() {
+    const c = await api('/api/changements?heures=24');
+    $('chiffres-changements').replaceChildren(
+      chiffre(c.crees, 'produits ajoutés'),
+      chiffre(c.misAJour, 'produits mis à jour (prix, nom…)'),
+      chiffre(c.stocks, 'stocks corrigés'),
+      chiffre(c.retires.length, 'produits retirés de la vente'),
+      chiffre(c.reactives.length, 'produits remis en vente'),
+      chiffre(c.commandes, 'commandes transmises à Sage'),
+    );
+    $('retires').replaceChildren(
+      ...(c.retires.length
+        ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, 'Produits retirés :')),
+           el('ul', { class: 'liste' }, c.retires.map((r) => el('li', {}, `${r.ref} — ${r.raison}`)))]
+        : []),
+      ...(c.prixBloques.length
+        ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, 'Prix non appliqués (variation trop forte, à vérifier dans Sage) :')),
+           el('ul', { class: 'liste' }, c.prixBloques.map((p) => el('li', {}, `${p.ref} — ${p.ancien} € → ${p.nouveau} € (${p.variation > 0 ? '+' : ''}${p.variation} %)`)))]
+        : []),
+      ...(c.stocksBloques ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, `${c.stocksBloques} mise(s) à zéro de stock bloquée(s) par sécurité`))] : []),
+      ...(c.commandesAVerifier.length
+        ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, 'Commandes à vérifier avant intégration dans Sage :')),
+           el('ul', { class: 'liste' }, c.commandesAVerifier.map((v) => el('li', {}, `${v.commande} — ${v.raison}`)))]
+        : []),
+    );
+  }
+
+  let articlesBloques = [];
+  function afficherBloques() {
+    const q = $('recherche').value.trim().toLowerCase();
+    const filtres = q ? articlesBloques.filter((a) => a.ref.toLowerCase().includes(q) || a.designation.toLowerCase().includes(q)) : articlesBloques;
+    const affiches = filtres.slice(0, 300);
+    $('bloques-liste').replaceChildren(
+      el('tr', {}, el('th', {}, 'Référence'), el('th', {}, 'Désignation'), el('th', {}, 'Raison'), el('th', {}, 'À corriger dans Sage')),
+      ...affiches.map((a) => el('tr', {}, el('td', {}, a.ref), el('td', {}, a.designation), el('td', {}, a.raison), el('td', {}, a.aCorriger))),
+    );
+    $('bloques-compte').textContent =
+      filtres.length > affiches.length
+        ? `${affiches.length} premiers affichés sur ${fmtNombre(filtres.length)} — affiner la recherche ou télécharger la liste complète.`
+        : `${fmtNombre(filtres.length)} article(s).`;
+  }
+
+  async function chargerBloques() {
+    const b = await api('/api/bloques');
+    articlesBloques = b.articles;
+    if (b.erreur) {
+      $('bloques-intro').textContent = 'Sage est inaccessible pour le moment : liste indisponible.';
+    } else if (!b.total) {
+      $('bloques-intro').textContent = 'Aucun : tous les articles publiés dans Sage sont en vente sur la boutique.';
+    } else {
+      $('bloques-intro').textContent =
+        `${fmtNombre(b.total)} article(s) sont cochés « publié » dans Sage mais ne sont pas envoyés sur la boutique. ` +
+        'Il suffit de corriger la fiche dans Sage : ils apparaîtront automatiquement au passage suivant.';
+    }
+    $('bloques-raisons').replaceChildren(
+      ...(b.parRaison.length
+        ? [el('tr', {}, el('th', {}, 'Nombre'), el('th', {}, 'Raison'), el('th', {}, 'À corriger dans Sage')),
+           ...b.parRaison.map((r) => el('tr', {}, el('td', { class: 'nombre' }, fmtNombre(r.nombre)), el('td', {}, r.raison), el('td', {}, r.aCorriger)))]
+        : []),
+    );
+    $('bloques-details').hidden = !b.total;
+    afficherBloques();
+  }
+
+  // Lignes du journal parlantes pour un non-technicien
+  const lignesUtiles = (lignes) =>
+    lignes
+      .map((l) => l.texte)
+      .filter((t) => /Créés|stock\(s\) différent|retiré :|remis en vente|Erreur|⚠/.test(t))
+      .filter((t) => !/— 0 stock\(s\) différent/.test(t) && !/^\s*[│┌└├]/.test(t));
+
+  async function chargerHistorique() {
+    const passages = await api('/api/historique?heures=48');
+    $('historique').replaceChildren(
+      el('tr', {}, el('th', {}, 'Heure'), el('th', {}, 'Résultat'), el('th', {}, 'Ce qui s\'est passé')),
+      ...(passages.length
+        ? passages.map((p) => {
+            const utiles = lignesUtiles(p.lignes);
+            return el('tr', {},
+              el('td', { style: 'white-space:nowrap' }, fmtHeure(p.date)),
+              el('td', {}, el('span', { class: p.ok ? 'ok-txt' : 'ko-txt' }, p.ok ? '✓ Réussie' : '✗ Échec')),
+              el('td', {},
+                utiles.length ? utiles.join(' · ') : el('span', { class: 'vide' }, 'Rien à changer'),
+                el('details', {}, el('summary', { class: 'note' }, 'Détail technique'), el('pre', {}, p.lignes.map((l) => `${l.heure} ${l.erreur ? 'ERR ' : ''}${l.texte}`).join('\n'))),
+              ),
+            );
+          })
+        : [el('tr', {}, el('td', { colspan: 3, class: 'vide' }, 'Aucune synchronisation sur la période.'))]),
+    );
+  }
+
+  async function toutCharger() {
+    const taches = [chargerEtat(), chargerChangements(), chargerHistorique()];
+    const res = await Promise.allSettled(taches);
+    const echec = res.find((r) => r.status === 'rejected');
+    if (echec) $('maj').textContent = `Impossible de joindre le connecteur (${echec.reason.message})`;
+  }
+
+  $('bouton-synchro').addEventListener('click', async () => {
+    $('bouton-synchro').disabled = true;
+    try {
+      const r = await api('/api/synchro', { method: 'POST', headers: { 'X-Connecteur': '1' } });
+      $('bouton-note').textContent = r.message;
+    } catch (err) {
+      $('bouton-note').textContent = `Échec : ${err.message}`;
+    }
+    setTimeout(toutCharger, 1500);
+  });
+  $('recherche').addEventListener('input', afficherBloques);
+
+  // Rafraîchissement : toutes les 30 s, toutes les 3 s pendant une synchro
+  let etaitEnCours = false;
+  async function boucle() {
+    await toutCharger();
+    if (etaitEnCours && !enCours) chargerBloques().catch(() => {});
+    etaitEnCours = enCours;
+    setTimeout(boucle, enCours ? 3000 : 30000);
+  }
+  boucle();
+  chargerBloques().catch((err) => { $('bloques-intro').textContent = `Liste indisponible (${err.message})`; });
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+2026-09-28 10:20:05 === Synchro Sage -> Shopify ===
+2026-09-28 10:20:05 --- 1/2 Produits ---
+2026-09-28 10:20:06 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:20:06 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:20:06 --- 2/2 Stocks ---
+2026-09-28 10:20:08 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:20:08 === OK en 3.7 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:20:24 === Synchro Sage -> Shopify --simulation ===
+2026-09-28 10:20:24 --- 1/2 Produits ---
+2026-09-28 10:20:26 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:20:26 2 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:20:26 ┌─────────┬──────────────┬─────────────────────────┐
+2026-09-28 10:20:26 │ (index) │ ref          │ raison                  │
+2026-09-28 10:20:26 ├─────────┼──────────────┼─────────────────────────┤
+2026-09-28 10:20:26 │ 0       │ '03520224'   │ 'mis en sommeil'        │
+2026-09-28 10:20:26 │ 1       │ '0352020832' │ 'plus de prix de vente' │
+2026-09-28 10:20:26 └─────────┴──────────────┴─────────────────────────┘
+2026-09-28 10:20:26 --- 2/2 Stocks ---
+2026-09-28 10:20:28 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:20:28 === OK en 3.8 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:20:30 === Synchro Sage -> Shopify ===
+2026-09-28 10:20:30 --- 1/2 Produits ---
+2026-09-28 10:20:32 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:20:32 2 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:20:34 Créés : 0   Mis à jour : 0 (dont 0 réactivé(s))   Retirés : 2   Erreurs : 0
+2026-09-28 10:20:34   – 03520224 retiré : mis en sommeil
+2026-09-28 10:20:34   – 0352020832 retiré : plus de prix de vente
+2026-09-28 10:20:34 Rapport : sortie/synchro-produits-2026-09-28T07-20-34-065Z.json
+2026-09-28 10:20:34 --- 2/2 Stocks ---
+2026-09-28 10:20:36 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:20:36 === OK en 6.3 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:20:52 === Synchro Sage -> Shopify ===
+2026-09-28 10:20:52 --- 1/2 Produits ---
+2026-09-28 10:20:53 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 2 à réactiver
+2026-09-28 10:20:53 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:20:56 Créés : 0   Mis à jour : 2 (dont 2 réactivé(s))   Retirés : 0   Erreurs : 0
+2026-09-28 10:20:56   + 0352020832 remis en vente
+2026-09-28 10:20:56   + 03520224 remis en vente
+2026-09-28 10:20:56 Rapport : sortie/synchro-produits-2026-09-28T07-20-56-726Z.json
+2026-09-28 10:20:56 --- 2/2 Stocks ---
+2026-09-28 10:20:58 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:20:58 === OK en 6.6 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:21:00 === Synchro Sage -> Shopify ===
+2026-09-28 10:21:00 --- 1/2 Produits ---
+2026-09-28 10:21:02 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:21:02 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:21:02 --- 2/2 Stocks ---
+2026-09-28 10:21:04 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:21:04 === OK en 3.8 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:21:31 === Synchro Sage -> Shopify ===
+2026-09-28 10:21:31 --- 1/2 Produits ---
+2026-09-28 10:21:33 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:21:33 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:21:33 --- 2/2 Stocks ---
+2026-09-28 10:21:35 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:21:35 === OK en 3.9 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:22:01 === Synchro Sage -> Shopify --simulation ===
+2026-09-28 10:22:01 --- 1/2 Produits ---
+2026-09-28 10:22:03 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:22:03 ERR ⚠ Retrait annulé : 10 produits à retirer sur 34 actifs (limite 6). Vérifier Sage, puis relancer avec --forcer-retrait si c'est voulu.
+2026-09-28 10:22:03 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:22:03 --- 2/2 Stocks ---
+2026-09-28 10:22:04 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:22:04 ERR === ÉCHEC en 3.3 s : Produits ✗   Stocks ✓ ===
+2026-09-28 10:22:15 === Synchro Sage -> Shopify --simulation ===
+2026-09-28 10:22:15 --- 1/2 Produits ---
+2026-09-28 10:22:16 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:22:16 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:22:16 --- 2/2 Stocks ---
+2026-09-28 10:22:18 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:22:18 Nettoyage : 2 fichier(s) de plus de 30 jours supprimé(s)
+2026-09-28 10:22:18 === OK en 2.7 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:22:28 === Synchro Sage -> Shopify --simulation ===
+2026-09-28 10:22:28 --- 1/2 Produits ---
+2026-09-28 10:22:30 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:22:30 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:22:30 --- 2/2 Stocks ---
+2026-09-28 10:22:31 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:22:31 === OK en 2.9 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:40:12 === Synchro Sage -> Shopify ===
+2026-09-28 10:40:12 --- 1/2 Produits ---
+2026-09-28 10:40:12 ERR Erreur : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]Cannot open database "BASE_INEXISTANTE" requested by the login. The login failed.
+2026-09-28 10:40:12 --- 2/2 Stocks ---
+2026-09-28 10:40:13 ERR Erreur : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]Cannot open database "BASE_INEXISTANTE" requested by the login. The login failed.
+2026-09-28 10:40:13 Alerte : e-mail écrit dans sortie\emails\2026-09-28T07-40-13-788Z.eml (mode test)
+2026-09-28 10:40:13 ERR === ÉCHEC en 1.1 s : Produits ✗   Stocks ✗ ===
+2026-09-28 10:40:14 === Synchro Sage -> Shopify ===
+2026-09-28 10:40:14 --- 1/2 Produits ---
+2026-09-28 10:40:14 ERR Erreur : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]Cannot open database "BASE_INEXISTANTE" requested by the login. The login failed.
+2026-09-28 10:40:14 --- 2/2 Stocks ---
+2026-09-28 10:40:15 ERR Erreur : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]Cannot open database "BASE_INEXISTANTE" requested by the login. The login failed.
+2026-09-28 10:40:15 Alerte : panne en cours depuis 28/09/2026 10:40 : prochain rappel e-mail dans moins de 4 h
+2026-09-28 10:40:15 ERR === ÉCHEC en 1.1 s : Produits ✗   Stocks ✗ ===
+2026-09-28 10:40:16 === Synchro Sage -> Shopify ===
+2026-09-28 10:40:16 --- 1/2 Produits ---
+2026-09-28 10:40:17 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:40:17 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:40:17 --- 2/2 Stocks ---
+2026-09-28 10:40:19 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:40:19 Alerte : e-mail écrit dans sortie\emails\2026-09-28T07-40-19-037Z.eml (mode test)
+2026-09-28 10:40:19 === OK en 2.8 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:40:19 === Synchro Sage -> Shopify ===
+2026-09-28 10:40:19 --- 1/2 Produits ---
+2026-09-28 10:40:21 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:40:21 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:40:21 --- 2/2 Stocks ---
+2026-09-28 10:40:22 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:40:22 === OK en 2.9 s : Produits ✓   Stocks ✓ ===
+2026-09-28 10:41:52 === Synchro Sage -> Shopify ===
+2026-09-28 10:41:52 --- 1/2 Produits ---
+2026-09-28 10:41:53 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 10:41:53 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 10:41:53 --- 2/2 Stocks ---
+2026-09-28 10:41:54 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 10:41:54 === OK en 2.8 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:13:53 === Synchro Sage -> Shopify ===
+2026-09-28 11:13:53 --- 1/2 Produits ---
+2026-09-28 11:13:55 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:13:55 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:13:55 --- 2/2 Stocks ---
+2026-09-28 11:13:55 Synchro déjà en cours (lancée le 28/09/2026 11:13:53) : ce lancement est ignoré.
+2026-09-28 11:13:56 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 11:13:56 === OK en 2.8 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:15:27 === Synchro Sage -> Shopify ===
+2026-09-28 11:15:27 --- 1/2 Produits ---
+2026-09-28 11:15:28 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:15:28 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:15:28 --- 2/2 Stocks ---
+2026-09-28 11:15:30 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 11:15:30 === OK en 2.9 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:17:43 === Synchro Sage -> Shopify ===
+2026-09-28 11:17:43 --- 1/2 Produits ---
+2026-09-28 11:17:45 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:17:45 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:17:45 --- 2/2 Stocks ---
+2026-09-28 11:17:46 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 11:17:46 === OK en 2.7 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:24:24 === Synchro Sage -> Shopify ===
+2026-09-28 11:24:24 --- 1/2 Produits ---
+2026-09-28 11:24:26 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:24:26 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:24:26 --- 2/2 Stocks ---
+2026-09-28 11:24:27 34 produit(s) Sage dans Shopify — 1 stock(s) différent(s) de Sage
+2026-09-28 11:24:27 ┌─────────┬──────────────┬─────────┬──────┐
+2026-09-28 11:24:27 │ (index) │ sku          │ shopify │ sage │
+2026-09-28 11:24:27 ├─────────┼──────────────┼─────────┼──────┤
+2026-09-28 11:24:27 │ 0       │ '0352020012' │ 5       │ 10   │
+2026-09-28 11:24:27 └─────────┴──────────────┴─────────┴──────┘
+2026-09-28 11:24:28 Mis à jour : 1   Erreurs : 0
+2026-09-28 11:24:28 Rapport : sortie/synchro-stocks-2026-09-28T08-24-28-205Z.json
+2026-09-28 11:24:28 === OK en 3.3 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:27:44 === Synchro Sage -> Shopify ===
+2026-09-28 11:27:44 --- 1/2 Produits ---
+2026-09-28 11:27:45 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:27:45 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:27:46 --- 2/2 Stocks ---
+2026-09-28 11:27:47 34 produit(s) Sage dans Shopify — 1 stock(s) différent(s) de Sage
+2026-09-28 11:27:47 ┌─────────┬──────────────┬─────────┬──────┐
+2026-09-28 11:27:47 │ (index) │ sku          │ shopify │ sage │
+2026-09-28 11:27:47 ├─────────┼──────────────┼─────────┼──────┤
+2026-09-28 11:27:47 │ 0       │ '0352020012' │ 10      │ 50   │
+2026-09-28 11:27:47 └─────────┴──────────────┴─────────┴──────┘
+2026-09-28 11:27:47 Mis à jour : 1   Erreurs : 0
+2026-09-28 11:27:47 Rapport : sortie/synchro-stocks-2026-09-28T08-27-47-831Z.json
+2026-09-28 11:27:47 === OK en 3.3 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:30:27 === Synchro Sage -> Shopify ===
+2026-09-28 11:30:27 --- 1/2 Produits ---
+2026-09-28 11:30:28 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:30:28 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:30:28 --- 2/2 Stocks ---
+2026-09-28 11:32:59 === Synchro Sage -> Shopify ===
+2026-09-28 11:32:59 --- 1/2 Produits ---
+2026-09-28 11:33:00 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:33:00 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:33:00 --- 2/2 Stocks ---
+2026-09-28 11:33:02 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 11:33:02 === OK en 2.7 s : Produits ✓   Stocks ✓ ===
+2026-09-28 11:41:58 === Synchro Sage -> Shopify ===
+2026-09-28 11:41:58 --- 1/2 Produits ---
+2026-09-28 11:41:59 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 11:41:59 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 11:41:59 --- 2/2 Stocks ---
+2026-09-28 11:42:00 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 11:42:00 === OK en 2.8 s : Produits ✓   Stocks ✓ ===
+2026-09-28 12:01:23 === Synchro Sage -> Shopify ===
+2026-09-28 12:01:23 --- 1/3 Produits ---
+2026-09-28 12:01:25 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:01:25 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:01:25 --- 2/3 Stocks ---
+2026-09-28 12:01:26 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:01:26 --- 3/3 Commandes ---
+2026-09-28 12:01:27 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:01:27 Mode « zone tampon (SODICO_CONNECTEUR) » : 5 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:01:28   ⚠ #1001 -> tampon #1 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 « Gift Card - $10 » : pas de référence article (SKU) ; ligne 2 « Gift Card - $25 » : pas de référence article (SKU)
+2026-09-28 12:01:28   ⚠ #1002 -> tampon #2 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 « The Collection Snowboard: Hydrogen » : pas de référence article (SKU) ; ligne 2 « The Collection Snowboard: Oxygen » : pas de référence article (SKU) ; ligne 3 « The Complete Snowboard - Ice » : pas de référence article (SKU)
+2026-09-28 12:01:29   ⚠ #1003 -> tampon #3 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 : article REF-INEXISTANTE introuvable dans Sage ; commande de test Shopify
+2026-09-28 12:01:29   ✓ #1004 -> tampon #4
+2026-09-28 12:01:30   ⚠ #1005 -> tampon #5 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 : article SKU-BEAUCOUP-TROP-LONG-POUR-SAGE introuvable dans Sage ; commande de test Shopify
+2026-09-28 12:01:30 Commandes transmises : 5 (dont 4 à vérifier)   Erreurs : 0
+2026-09-28 12:01:30 Rapport : sortie/synchro-commandes-2026-09-28T09-01-30-082Z.json
+2026-09-28 12:01:30 === OK en 6.5 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:03:04 === Synchro Sage -> Shopify ===
+2026-09-28 12:03:04 --- 1/3 Produits ---
+2026-09-28 12:03:05 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:03:05 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:03:05 --- 2/3 Stocks ---
+2026-09-28 12:03:06 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:03:06 --- 3/3 Commandes ---
+2026-09-28 12:03:07 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:03:07 Mode « zone tampon (SODICO_CONNECTEUR) » : 3 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:03:07 ERR   ✗ #1006 : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]The target table 'dbo.CMD_ENTETE' of the DML statement cannot have any enabled triggers if the statement contains an OUTPUT clause without INTO clause.
+2026-09-28 12:03:07 ERR   ✗ #1007 : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]The target table 'dbo.CMD_ENTETE' of the DML statement cannot have any enabled triggers if the statement contains an OUTPUT clause without INTO clause.
+2026-09-28 12:03:07 ERR   ✗ #1008 : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]The target table 'dbo.CMD_ENTETE' of the DML statement cannot have any enabled triggers if the statement contains an OUTPUT clause without INTO clause.
+2026-09-28 12:03:07 Commandes transmises : 0 (dont 0 à vérifier)   Erreurs : 3
+2026-09-28 12:03:07 Rapport : sortie/synchro-commandes-2026-09-28T09-03-07-835Z.json
+2026-09-28 12:03:07 Alerte : e-mail écrit dans sortie\emails\2026-09-28T09-03-07-884Z.eml (mode test)
+2026-09-28 12:03:07 ERR === ÉCHEC en 3.8 s : Produits ✓   Stocks ✓   Commandes ✗ ===
+2026-09-28 12:03:08 === Synchro Sage -> Shopify ===
+2026-09-28 12:03:08 --- 1/3 Produits ---
+2026-09-28 12:03:10 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:03:10 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:03:10 --- 2/3 Stocks ---
+2026-09-28 12:03:11 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:03:11 --- 3/3 Commandes ---
+2026-09-28 12:03:12 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:03:12 Mode « zone tampon (SODICO_CONNECTEUR) » : 3 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:03:12   ⚠ #1006 -> tampon #6 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 : SKU « SKU-BEAUCOUP-TROP-LONG-POUR-SAGE » trop long pour une référence Sage (19 caractères max.) ; commande de test Shopify
+2026-09-28 12:03:13   ✓ #1007 -> tampon #7
+2026-09-28 12:03:13   ✓ #1008 -> tampon #8
+2026-09-28 12:03:13 Commandes transmises : 3 (dont 1 à vérifier)   Erreurs : 0
+2026-09-28 12:03:13 Rapport : sortie/synchro-commandes-2026-09-28T09-03-13-893Z.json
+2026-09-28 12:03:13 Alerte : e-mail écrit dans sortie\emails\2026-09-28T09-03-13-929Z.eml (mode test)
+2026-09-28 12:03:13 === OK en 5.3 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:03:14 === Synchro Sage -> Shopify ===
+2026-09-28 12:03:14 --- 1/3 Produits ---
+2026-09-28 12:03:16 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:03:16 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:03:16 --- 2/3 Stocks ---
+2026-09-28 12:03:17 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:03:17 --- 3/3 Commandes ---
+2026-09-28 12:03:18 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:03:18 Mode « zone tampon (SODICO_CONNECTEUR) » : 0 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:03:18 ERR Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c, line 94
+2026-09-28 12:03:18 Alerte : e-mail écrit dans sortie\emails\2026-09-28T09-03-18-466Z.eml (mode test)
+2026-09-28 12:03:18 ERR === ÉCHEC en 3.8 s : Produits ✓   Stocks ✓   Commandes ✗ ===
+2026-09-28 12:05:21 === Synchro Sage -> Shopify ===
+2026-09-28 12:05:21 --- 1/3 Produits ---
+2026-09-28 12:05:22 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:05:22 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:05:22 --- 2/3 Stocks ---
+2026-09-28 12:05:24 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:05:24 --- 3/3 Commandes ---
+2026-09-28 12:05:24 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:05:24 Mode « zone tampon (SODICO_CONNECTEUR) » : 3 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:05:25   ⚠ #1009 -> tampon #9 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 : SKU « SKU-BEAUCOUP-TROP-LONG-POUR-SAGE » trop long pour une référence Sage (19 caractères max.) ; commande de test Shopify
+2026-09-28 12:05:25 ERR   ✗ #1010 : [Microsoft][ODBC Driver 18 for SQL Server][SQL Server]Panne simulée pour le test
+2026-09-28 12:05:26   ✓ #1011 -> tampon #11
+2026-09-28 12:05:26 Commandes transmises : 2 (dont 1 à vérifier)   Erreurs : 1
+2026-09-28 12:05:26 Rapport : sortie/synchro-commandes-2026-09-28T09-05-26-160Z.json
+2026-09-28 12:05:26 Alerte : panne en cours depuis 28/09/2026 12:03 : prochain rappel e-mail dans moins de 4 h
+2026-09-28 12:05:26 ERR === ÉCHEC en 5.0 s : Produits ✓   Stocks ✓   Commandes ✗ ===
+2026-09-28 12:05:26 === Synchro Sage -> Shopify ===
+2026-09-28 12:05:26 --- 1/3 Produits ---
+2026-09-28 12:05:28 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:05:28 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:05:28 --- 2/3 Stocks ---
+2026-09-28 12:05:29 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:05:29 --- 3/3 Commandes ---
+2026-09-28 12:05:30 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:05:30 Mode « zone tampon (SODICO_CONNECTEUR) » : 1 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:05:31   ✓ #1010 -> tampon #12
+2026-09-28 12:05:31 Commandes transmises : 1 (dont 0 à vérifier)   Erreurs : 0
+2026-09-28 12:05:31 Rapport : sortie/synchro-commandes-2026-09-28T09-05-31-336Z.json
+2026-09-28 12:05:31 Alerte : e-mail écrit dans sortie\emails\2026-09-28T09-05-31-362Z.eml (mode test)
+2026-09-28 12:05:31 === OK en 4.5 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:05:32 === Synchro Sage -> Shopify ===
+2026-09-28 12:05:32 --- 1/3 Produits ---
+2026-09-28 12:05:33 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:05:33 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:05:33 --- 2/3 Stocks ---
+2026-09-28 12:05:35 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:05:35 --- 3/3 Commandes ---
+2026-09-28 12:05:35 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:05:35 Mode « zone tampon (SODICO_CONNECTEUR) » : 0 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:05:36 === OK en 3.9 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:05:54 === Synchro Sage -> Shopify ===
+2026-09-28 12:05:54 --- 1/3 Produits ---
+2026-09-28 12:05:56 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:05:56 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:05:56 --- 2/3 Stocks ---
+2026-09-28 12:05:57 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:05:57 --- 3/3 Commandes ---
+2026-09-28 12:05:57 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:05:57 === OK en 2.8 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:07:24 === Synchro Sage -> Shopify ===
+2026-09-28 12:07:24 --- 1/3 Produits ---
+2026-09-28 12:07:26 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:07:26 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:07:26 --- 2/3 Stocks ---
+2026-09-28 12:07:28 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:07:28 --- 3/3 Commandes ---
+2026-09-28 12:07:28 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:07:28 === OK en 4.1 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:13:42 === Synchro Sage -> Shopify ===
+2026-09-28 12:13:42 --- 1/3 Produits ---
+2026-09-28 12:13:44 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:13:44 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:13:44 --- 2/3 Stocks ---
+2026-09-28 12:13:46 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:13:46 --- 3/3 Commandes ---
+2026-09-28 12:13:47 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:13:47 === OK en 4.4 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:19:24 === Synchro Sage -> Shopify ===
+2026-09-28 12:19:24 --- 1/3 Produits ---
+2026-09-28 12:19:26 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:19:26 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:19:26 --- 2/3 Stocks ---
+2026-09-28 12:19:28 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:19:28 --- 3/3 Commandes ---
+2026-09-28 12:19:30 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:19:30 Mode « Objets Métiers Sage (SIMULATION : rien n'est créé dans Sage) » : 2 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:19:31   simulation : aucune société Sage ouverte
+2026-09-28 12:19:31   ⚠ #1012 -> non créée dans Sage — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 : article REF-INEXISTANTE introuvable dans Sage ; commande de test Shopify
+2026-09-28 12:19:31 ERR ⚠ Table F_DOCENTETE absente (base de test) : contrôle anti-doublon côté Sage désactivé
+2026-09-28 12:19:32   ✓ #1013 -> pièce Sage SIM00001
+2026-09-28 12:19:32 Commandes transmises : 2 (dont 1 à vérifier)   Erreurs : 0
+2026-09-28 12:19:32 Rapport : sortie/synchro-commandes-2026-09-28T09-19-32-281Z.json
+2026-09-28 12:19:32 === OK en 7.8 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:19:34 === Synchro Sage -> Shopify ===
+2026-09-28 12:19:34 --- 1/3 Produits ---
+2026-09-28 12:19:36 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:19:36 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:19:36 --- 2/3 Stocks ---
+2026-09-28 12:19:37 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:19:37 --- 3/3 Commandes ---
+2026-09-28 12:19:39 Mode « Objets Métiers Sage (SIMULATION : rien n'est créé dans Sage) » : 0 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:19:39 === OK en 5.3 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:20:12 === Synchro Sage -> Shopify ===
+2026-09-28 12:20:12 --- 1/3 Produits ---
+2026-09-28 12:20:14 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:20:14 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:20:14 --- 2/3 Stocks ---
+2026-09-28 12:20:16 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:20:16 --- 3/3 Commandes ---
+2026-09-28 12:20:17 ERR ⚠ Shopify : This app is not approved to access the Customer object. Access to personally identifiable information (PII) like customer names, addresses, emails, phone numbers is only available on Shopify, Advanced, and Plus plans. Learn more: https://admin.shopify.com/store/sagy-qihid5wr/settings/apps/development/421153996801/configuration
+2026-09-28 12:20:17 Mode « zone tampon (SODICO_CONNECTEUR) » : 1 commande(s) à transmettre depuis le 01/09/2026
+2026-09-28 12:20:18   ⚠ #1012 -> tampon #13 — à vérifier : pas d'entreprise B2B : client par défaut B7122 ; ligne 1 : article REF-INEXISTANTE introuvable dans Sage ; commande de test Shopify
+2026-09-28 12:20:18 Commandes transmises : 1 (dont 1 à vérifier)   Erreurs : 0
+2026-09-28 12:20:18 Rapport : sortie/synchro-commandes-2026-09-28T09-20-18-668Z.json
+2026-09-28 12:20:18 === OK en 6.3 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:22:11 === Synchro Sage -> Shopify ===
+2026-09-28 12:22:11 --- 1/3 Produits ---
+2026-09-28 12:22:13 Périmètre « poc » : 0 modifié(s) dans Sage depuis 2026-09-24 17:47:59, 0 absent(s) de Shopify, 0 à réactiver
+2026-09-28 12:22:13 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:22:13 --- 2/3 Stocks ---
+2026-09-28 12:22:15 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:22:15 --- 3/3 Commandes ---
+2026-09-28 12:22:16 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:22:16 === OK en 4.5 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:40:18 === Synchro Sage -> Shopify ===
+2026-09-28 12:40:18 --- 1/3 Produits ---
+2026-09-28 12:40:20 Périmètre « poc » : 0 à créer, 0 à mettre à jour (modifiés dans Sage depuis 2026-09-24 17:47:59), 0 à remettre en vente
+2026-09-28 12:40:20 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:40:20 --- 2/3 Stocks ---
+2026-09-28 12:40:22 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:40:22 --- 3/3 Commandes ---
+2026-09-28 12:40:22 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:40:22 === OK en 4.6 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:41:05 === Synchro Sage -> Shopify ===
+2026-09-28 12:41:05 --- 1/3 Produits ---
+2026-09-28 12:41:07 Périmètre « poc » : 0 à créer, 1 à mettre à jour (modifiés dans Sage depuis 2026-09-24 17:47:59), 0 à remettre en vente, 1 protégé(s) non modifié(s)
+2026-09-28 12:41:07 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:41:07   = 0352020832 non modifié : étiquette sage-ignorer
+2026-09-28 12:41:08 Créés : 0   Mis à jour : 1 (dont 0 réactivé(s))   Retirés : 0   Erreurs : 0
+2026-09-28 12:41:08 ERR ⚠ Prix non appliqué 035202084 : 2.61 → 26.12 (+901 %), à vérifier dans Sage (--forcer-prix pour l'appliquer)
+2026-09-28 12:41:08 Rapport : sortie/synchro-produits-2026-09-28T09-41-08-144Z.json
+2026-09-28 12:41:08 --- 2/3 Stocks ---
+2026-09-28 12:41:10 33 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:41:10   2 produit(s) protégé(s) non modifié(s) (sage-ignorer ou non créés par le connecteur)
+2026-09-28 12:41:10 --- 3/3 Commandes ---
+2026-09-28 12:41:10 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:41:11 === OK en 5.6 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:41:40 === Synchro Sage -> Shopify ===
+2026-09-28 12:41:40 --- 1/3 Produits ---
+2026-09-28 12:41:42 Périmètre « poc » : 0 à créer, 0 à mettre à jour (modifiés dans Sage depuis 2026-09-28 12:40:48), 0 à remettre en vente, 1 protégé(s) non modifié(s)
+2026-09-28 12:41:42 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:41:42   = 0352020832 non modifié : étiquette sage-ignorer
+2026-09-28 12:41:42 --- 2/3 Stocks ---
+2026-09-28 12:41:44 33 produit(s) Sage dans Shopify — 10 stock(s) différent(s) de Sage
+2026-09-28 12:41:44   2 produit(s) protégé(s) non modifié(s) (sage-ignorer ou non créés par le connecteur)
+2026-09-28 12:41:44 ERR ⚠ Mise à zéro bloquée : 10 produits passeraient d'un coup à 0 en stock (anomalie probable côté Sage). Les autres écarts sont appliqués. Vérifier Sage, puis relancer avec --forcer-stocks si c'est voulu.
+2026-09-28 12:41:44 --- 3/3 Commandes ---
+2026-09-28 12:41:44 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:41:44 Alerte : e-mail écrit dans sortie\emails\2026-09-28T09-41-44-772Z.eml (mode test)
+2026-09-28 12:41:44 ERR === ÉCHEC en 4.5 s : Produits ✓   Stocks ✗   Commandes ✓ ===
+2026-09-28 12:41:48 === Synchro Sage -> Shopify ===
+2026-09-28 12:41:48 --- 1/3 Produits ---
+2026-09-28 12:41:50 Périmètre « poc » : 0 à créer, 0 à mettre à jour (modifiés dans Sage depuis 2026-09-28 12:40:48), 0 à remettre en vente, 1 protégé(s) non modifié(s)
+2026-09-28 12:41:50 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:41:50   = 0352020832 non modifié : étiquette sage-ignorer
+2026-09-28 12:41:50 --- 2/3 Stocks ---
+2026-09-28 12:41:52 33 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:41:52   2 produit(s) protégé(s) non modifié(s) (sage-ignorer ou non créés par le connecteur)
+2026-09-28 12:41:52 --- 3/3 Commandes ---
+2026-09-28 12:41:53 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:41:53 Alerte : e-mail écrit dans sortie\emails\2026-09-28T09-41-53-139Z.eml (mode test)
+2026-09-28 12:41:53 === OK en 4.4 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:42:10 === Synchro Sage -> Shopify ===
+2026-09-28 12:42:10 --- 1/3 Produits ---
+2026-09-28 12:42:12 Périmètre « poc » : 0 à créer, 0 à mettre à jour (modifiés dans Sage depuis 2026-09-28 12:40:48), 0 à remettre en vente, 1 protégé(s) non modifié(s)
+2026-09-28 12:42:12 1 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:42:12   = 0352020832 non modifié : étiquette sage-ignorer
+2026-09-28 12:42:13 Créés : 0   Mis à jour : 0 (dont 0 réactivé(s))   Retirés : 1   Erreurs : 0
+2026-09-28 12:42:13   – 03520411 retiré : mis en sommeil
+2026-09-28 12:42:13 Rapport : sortie/synchro-produits-2026-09-28T09-42-13-095Z.json
+2026-09-28 12:42:13 --- 2/3 Stocks ---
+2026-09-28 12:42:15 33 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:42:15   2 produit(s) protégé(s) non modifié(s) (sage-ignorer ou non créés par le connecteur)
+2026-09-28 12:42:15 --- 3/3 Commandes ---
+2026-09-28 12:42:15 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:42:15 === OK en 5.3 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:42:21 === Synchro Sage -> Shopify ===
+2026-09-28 12:42:21 --- 1/3 Produits ---
+2026-09-28 12:42:23 Périmètre « poc » : 0 à créer, 0 à mettre à jour (modifiés dans Sage depuis 2026-09-28 12:40:48), 1 à remettre en vente, 1 protégé(s) non modifié(s)
+2026-09-28 12:42:23 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:42:23   = 0352020832 non modifié : étiquette sage-ignorer
+2026-09-28 12:42:24 Créés : 0   Mis à jour : 1 (dont 1 réactivé(s))   Retirés : 0   Erreurs : 0
+2026-09-28 12:42:24   + 03520411 remis en vente
+2026-09-28 12:42:24 Rapport : sortie/synchro-produits-2026-09-28T09-42-24-374Z.json
+2026-09-28 12:42:24 --- 2/3 Stocks ---
+2026-09-28 12:42:26 33 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:42:26   2 produit(s) protégé(s) non modifié(s) (sage-ignorer ou non créés par le connecteur)
+2026-09-28 12:42:26 --- 3/3 Commandes ---
+2026-09-28 12:42:26 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:42:26 === OK en 5.4 s : Produits ✓   Stocks ✓   Commandes ✓ ===
+2026-09-28 12:43:09 === Synchro Sage -> Shopify ===
+2026-09-28 12:43:09 --- 1/3 Produits ---
+2026-09-28 12:43:11 Périmètre « poc » : 0 à créer, 0 à mettre à jour (modifiés dans Sage depuis 2026-09-28 12:42:19), 0 à remettre en vente
+2026-09-28 12:43:11 0 produit(s) à retirer de la vente (passage en brouillon)
+2026-09-28 12:43:11 --- 2/3 Stocks ---
+2026-09-28 12:43:13 34 produit(s) Sage dans Shopify — 0 stock(s) différent(s) de Sage
+2026-09-28 12:43:13 --- 3/3 Commandes ---
+2026-09-28 12:43:14 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-28 12:43:14 === OK en 4.4 s : Produits ✓   Stocks ✓   Commandes ✓ ===

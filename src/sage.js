@@ -45,6 +45,84 @@ export async function lireArticles(pool, { depuis, refs, avecStock } = {}) {
   return recordset;
 }
 
+/**
+ * Pourquoi des articles ne sont plus à publier (pour le journal des retraits).
+ * @returns {Map<string, string>} référence -> raison
+ */
+export async function raisonsRetrait(pool, refs) {
+  const raisons = new Map(refs.map((r) => [r, 'supprimé de Sage']));
+  for (let i = 0; i < refs.length; i += 500) {
+    const lot = refs.slice(i, i + 500);
+    const req = pool.request();
+    lot.forEach((r, j) => req.input(`r${j}`, sql.VarChar(19), r));
+    const { recordset } = await req.query(`
+      SELECT a.AR_Ref, a.AR_Sommeil, a.AR_Publie, a.AR_PrixVen, a.AR_Design, a.AR_CodeBarre,
+             CASE WHEN EXISTS (SELECT 1 FROM dbo.DP_STOCKS s WHERE s.STO_ART_NUM = a.AR_Ref AND s.STO_DEPPRINC = 'OUI')
+                  THEN 1 ELSE 0 END AS a_stock
+      FROM dbo.F_ARTICLE a
+      WHERE a.AR_Ref IN (${lot.map((_, j) => `@r${j}`).join(', ')})`);
+    for (const a of recordset) {
+      raisons.set(a.AR_Ref, a.AR_Sommeil !== 0 ? 'mis en sommeil' : a.AR_Publie !== 1 ? 'décoché « publié »' : blocage(a, 'poc')?.raison ?? 'hors périmètre');
+    }
+  }
+  return raisons;
+}
+
+/**
+ * Pourquoi un article actif et « publié » n'est pas en ligne, et quoi corriger dans Sage. null s'il est publiable.
+ * Mêmes règles que la sélection de lireArticles (+ filtre POC de cli-produits).
+ * @param {{ AR_PrixVen: number, AR_Design: string, AR_CodeBarre: string, a_stock: number }} a
+ */
+export function blocage(a, perimetre) {
+  if (!(a.AR_PrixVen > 0)) return { raison: 'pas de prix de vente', aCorriger: 'Fiche article → Prix de vente' };
+  if (perimetre !== 'poc') return null;
+  if (!a.a_stock) return { raison: 'pas de stock au dépôt principal', aCorriger: 'Stock de l\'article au dépôt principal' };
+  if (!ean13Valide(a.AR_CodeBarre)) return { raison: 'code-barre invalide', aCorriger: 'Fiche article → Code barre (13 chiffres, clé de contrôle)' };
+  if (a.AR_Design.trim().length < 4) return { raison: 'désignation trop courte', aCorriger: 'Fiche article → Désignation' };
+  return null;
+}
+
+/** Articles actifs et cochés « publié » qui ne sont pas envoyés sur Shopify, avec la raison. */
+export async function articlesBloques(pool, perimetre) {
+  const { recordset } = await pool.request().query(`
+    SELECT a.AR_Ref, a.AR_Design, a.AR_PrixVen, a.AR_CodeBarre,
+           CASE WHEN EXISTS (SELECT 1 FROM dbo.DP_STOCKS s WHERE s.STO_ART_NUM = a.AR_Ref AND s.STO_DEPPRINC = 'OUI')
+                THEN 1 ELSE 0 END AS a_stock
+    FROM dbo.F_ARTICLE a
+    WHERE a.AR_Sommeil = 0 AND a.AR_Publie = 1
+    ORDER BY a.AR_Ref`);
+  return recordset.flatMap((a) => {
+    const b = blocage(a, perimetre);
+    return b ? [{ ref: a.AR_Ref, designation: a.AR_Design.trim(), ...b }] : [];
+  });
+}
+
+async function parLots(pool, valeurs, type, requete) {
+  const lignes = [];
+  const uniques = [...new Set(valeurs.filter(Boolean))];
+  for (let i = 0; i < uniques.length; i += 500) {
+    const lot = uniques.slice(i, i + 500);
+    const req = pool.request();
+    lot.forEach((v, j) => req.input(`v${j}`, type, v));
+    lignes.push(...(await req.query(requete(lot.map((_, j) => `@v${j}`).join(', ')))).recordset);
+  }
+  return lignes;
+}
+
+/** Articles Sage existants parmi ces références : Map AR_Ref -> { AR_Design, AR_Sommeil }. */
+export async function articlesExistants(pool, refs) {
+  const lignes = await parLots(pool, refs, sql.VarChar(19), (p) =>
+    `SELECT AR_Ref, AR_Design, AR_Sommeil FROM dbo.F_ARTICLE WHERE AR_Ref IN (${p})`);
+  return new Map(lignes.map((a) => [a.AR_Ref, a]));
+}
+
+/** Clients Sage (CT_Type = 0) parmi ces codes : Map CT_Num -> { CT_Intitule, CT_Sommeil }. */
+export async function clientsExistants(pool, codes) {
+  const lignes = await parLots(pool, codes, sql.VarChar(17), (p) =>
+    `SELECT CT_Num, CT_Intitule, CT_Sommeil FROM dbo.F_COMPTET WHERE CT_Type = 0 AND CT_Num IN (${p})`);
+  return new Map(lignes.map((c) => [c.CT_Num, c]));
+}
+
 /** Stock disponible du dépôt principal, par référence article. */
 export async function lireStocks(pool) {
   const { recordset } = await pool.request().query(`

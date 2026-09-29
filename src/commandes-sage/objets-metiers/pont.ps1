@@ -1,19 +1,24 @@
 ﻿# Pont Objets Métiers Sage 100 (option B).
 # Protocole : une requête JSON par ligne sur l'entrée standard, une réponse JSON par ligne sur la sortie standard.
-#   { "action": "ouvrir" }                    -> ouvre la comptabilité (.mae) et la gestion commerciale (.gcm)
+#   { "action": "ouvrir" }                    -> ouvre la gestion commerciale (et la comptabilité qui lui est liée)
 #   { "action": "creer", "commande": {...} }  -> crée un bon de commande de vente, renvoie { ok, piece }
 #   { "action": "fermer" }                    -> ferme la société et termine
 # Réponse en cas d'échec : { ok: false, erreur: "..." } (le pont continue : une commande en échec n'arrête pas les autres).
 #
 # Configuration (variables d'environnement, depuis le .env du connecteur) :
-#   OM_FICHIER_MAE, OM_FICHIER_GCM   fichiers de la société Sage (ils pointent vers la base SQL)
+#   OM_FICHIER_GCM                   fichier de la société commerciale (.gcm), OU :
+#   OM_SERVEUR_SQL + OM_BASE_SQL     serveur/instance SQL et base Sage (propriétés CompanyServer / CompanyDatabaseName)
+#   OM_FICHIER_MAE                   (optionnel) fichier comptable (.mae) ; sinon la comptabilité liée à la base commerciale
 #   OM_UTILISATEUR, OM_MOT_DE_PASSE  utilisateur Sage dédié au connecteur
 #   OM_SOUCHE, OM_DEPOT              (optionnels) intitulés de la souche et du dépôt des commandes web
 #   OM_PRIX = shopify (défaut) | sage  prix de la commande Shopify, ou tarif Sage du client recalculé
 #   OM_SIMULATION = oui              aucun appel à Sage : contrôle le format et renvoie une pièce fictive SIM00001…
 #
-# ⚠ Les appels aux Objets Métiers suivent la documentation Sage 100 (processus CreateProcess_Document).
-#   À valider sur la société de test fournie par M2I (noms exacts selon la version installée).
+# Conforme au manuel « Sage 100cloud Objets Métiers » (processus de création de document IPMDocument) :
+#   - la bibliothèque est en 32 bits : lancer ce pont avec le PowerShell 32 bits (SysWOW64) ;
+#   - on n'ouvre que la base commerciale : son Open() ouvre aussi la base comptable liée ;
+#   - le document n'est écrit en base qu'à Process(), après CanProcess() ; rien n'est verrouillé avant.
+# ⚠ À valider sur une société de test : la valeur de DocumentTypeVenteCommande (1 supposé) et les intitulés de souche/dépôt.
 
 $ErrorActionPreference = 'Stop'
 $utf8 = New-Object System.Text.UTF8Encoding($false)
@@ -21,11 +26,11 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 [Console]::OutputEncoding = $utf8
 
 $simulation = $env:OM_SIMULATION -eq 'oui'
-$script:cpta = $null
 $script:cial = $null
 $script:compteurSimulation = 0
 
-# Types de documents de vente des Objets Métiers (DocumentType) : 0 devis, 1 bon de commande
+# Énuméré DocumentType : DocumentTypeVenteCommande (bon de commande de vente), supposé égal à DO_Type = 1 de F_DOCENTETE.
+# Le manuel ne donne que les noms : à confirmer au premier test (la pièce créée doit apparaître en « Bon de commande »).
 $DOCUMENT_VENTE_COMMANDE = 1
 
 function Repondre($objet) {
@@ -39,31 +44,47 @@ function Exiger([string[]] $noms) {
     }
 }
 
+# Crée l'objet COM : identifiant versionné du manuel (« .1 »), puis sans version.
+function NouvelObjet([string[]] $identifiants) {
+    foreach ($id in $identifiants) {
+        try { return New-Object -ComObject $id } catch { if ($_.Exception.Message -notmatch '80040154') { throw } }
+    }
+    $bits = if ([Environment]::Is64BitProcess) { '64' } else { '32' }
+    throw "Objets Métiers Sage introuvables sur ce poste (PowerShell $bits bits). Vérifier leur installation (Runtime objets100c), ou essayer OM_ARCHITECTURE=$(if ($bits -eq '32') { '64' } else { '32' })."
+}
+
 function Ouvrir {
     if ($simulation) { return @{ ok = $true; message = 'simulation : aucune société Sage ouverte' } }
-    Exiger 'OM_FICHIER_MAE', 'OM_FICHIER_GCM', 'OM_UTILISATEUR'
-
-    try {
-        $script:cpta = New-Object -ComObject 'Objets100c.Cpta.Stream'
-    } catch {
-        if ($_.Exception.Message -match '80040154') {
-            $bits = if ([Environment]::Is64BitProcess) { '64' } else { '32' }
-            throw "Objets Métiers Sage introuvables sur ce poste (PowerShell $bits bits). Vérifier leur installation, ou essayer OM_ARCHITECTURE=$(if ($bits -eq '32') { '64' } else { '32' })."
-        }
-        throw
+    if (-not $env:OM_FICHIER_GCM -and -not ($env:OM_SERVEUR_SQL -and $env:OM_BASE_SQL)) {
+        throw 'Variable OM_FICHIER_GCM manquante dans le fichier .env (ou OM_SERVEUR_SQL + OM_BASE_SQL)'
     }
-    $script:cpta.Name = $env:OM_FICHIER_MAE
-    $script:cpta.Loggable.UserName = $env:OM_UTILISATEUR
-    $script:cpta.Loggable.UserPwd = [string]$env:OM_MOT_DE_PASSE
-    $script:cpta.Open()
+    Exiger 'OM_UTILISATEUR'
 
-    $script:cial = New-Object -ComObject 'Objets100c.Cial.Stream'
-    $script:cial.Name = $env:OM_FICHIER_GCM
-    $script:cial.CptaApplication = $script:cpta
+    $script:cial = NouvelObjet 'Objets100c.Cial.Stream.1', 'Objets100c.Cial.Stream'
+    if ($env:OM_FICHIER_GCM) {
+        $script:cial.Name = $env:OM_FICHIER_GCM
+    } else {
+        $script:cial.CompanyServer = $env:OM_SERVEUR_SQL
+        $script:cial.CompanyDatabaseName = $env:OM_BASE_SQL
+    }
+    # Base comptable liée : seulement si elle est précisée ; sinon Sage reprend celle rattachée à la base commerciale.
+    if ($env:OM_FICHIER_MAE) {
+        $cpta = NouvelObjet 'Objets100c.Cpta.Stream.1', 'Objets100c.Cpta.Stream'
+        $cpta.Name = $env:OM_FICHIER_MAE
+        $cpta.Loggable.UserName = $env:OM_UTILISATEUR
+        $cpta.Loggable.UserPwd = [string]$env:OM_MOT_DE_PASSE
+        $script:cial.CptaApplication = $cpta
+    }
     $script:cial.Loggable.UserName = $env:OM_UTILISATEUR
     $script:cial.Loggable.UserPwd = [string]$env:OM_MOT_DE_PASSE
-    $script:cial.Open()
-    return @{ ok = $true; message = "société Sage ouverte ($($env:OM_FICHIER_GCM))" }
+    $script:cial.Open() # ouvre aussi la comptabilité liée (manuel OM, « Ouverture et fermeture d'une base commerciale »)
+
+    if (-not $script:cial.Licence.IsValid) {
+        Fermer
+        throw 'Licence Objets Métiers absente ou invalide pour cette société Sage : voir avec M2I'
+    }
+    $nom = if ($env:OM_FICHIER_GCM) { $env:OM_FICHIER_GCM } else { "$($env:OM_SERVEUR_SQL) / $($env:OM_BASE_SQL)" }
+    return @{ ok = $true; message = "société Sage ouverte ($nom)" }
 }
 
 function Verifier($c) {
@@ -85,23 +106,27 @@ function Creer($c) {
     if (-not $script:cial) { throw 'société Sage non ouverte' }
 
     # Le « processus » applique toutes les règles Sage : numérotation, tarifs, totaux, stock réservé, contrôles.
+    # Tant que Process() n'est pas appelé, le document n'existe qu'en mémoire (rien n'est verrouillé ni écrit).
     $process = $script:cial.CreateProcess_Document($DOCUMENT_VENTE_COMMANDE)
     $doc = $process.Document
-    $doc.SetDefaultClient($script:cpta.FactoryClient.ReadNumero($c.ctNum))
+    $doc.SetAutoRecalculTotaux($false) # totaux calculés une seule fois, pas à chaque ligne (exemple du manuel)
+    $doc.SetDefaultClient($script:cial.CptaApplication.FactoryClient.ReadNumero($c.ctNum))
     $doc.DO_Date = [datetime]$c.date
     $doc.DO_Ref = $c.reference
     if ($env:OM_SOUCHE) { $doc.Souche = $script:cial.FactorySoucheVente.ReadIntitule($env:OM_SOUCHE) }
-    if ($env:OM_DEPOT) { $doc.DepotStockage = $script:cial.FactoryDepot.ReadIntitule($env:OM_DEPOT) }
+    if ($env:OM_DEPOT) { $doc.DO_DepotStockage = $script:cial.FactoryDepot.ReadIntitule($env:OM_DEPOT) }
 
     foreach ($l in $c.lignes) {
-        $article = $script:cial.FactoryArticle.ReadReference($l.arRef)
-        $ligne = $process.AddArticle($article, [double]$l.quantite)
+        $ligne = $process.AddArticleReference([string]$l.arRef, [double]$l.quantite)
         if ($env:OM_PRIX -ne 'sage') { $ligne.DL_PrixUnitaire = [double]$l.prixUnitaire }
     }
 
     if (-not $process.CanProcess) {
         $messages = @()
-        for ($i = 1; $i -le $process.Errors.Count; $i++) { $messages += $process.Errors.Item($i).Text }
+        for ($i = 1; $i -le $process.Errors.Count; $i++) {
+            $e = $process.Errors.Item($i)
+            $messages += "$($e.Text) (code $($e.ErrorCode))"
+        }
         throw ('Sage refuse la commande : ' + ($messages -join ' ; '))
     }
     $process.Process()
@@ -109,8 +134,8 @@ function Creer($c) {
 }
 
 function Fermer {
-    if ($script:cial) { try { $script:cial.Close() } catch {} }
-    if ($script:cpta) { try { $script:cpta.Close() } catch {} }
+    # Fermer la base commerciale referme aussi la comptabilité liée
+    if ($script:cial) { try { if ($script:cial.IsOpen) { $script:cial.Close() } } catch {} }
 }
 
 $fin = $false

@@ -13,6 +13,7 @@
     "verifier": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-verifier.js",
     "stocks": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-stocks.js",
     "synchro": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-synchro.js",
+    "synchro-catalogue": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-synchro.js --catalogue",
     "resume": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-resume.js",
     "test-email": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-test-email.js",
     "interface": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-interface.js",

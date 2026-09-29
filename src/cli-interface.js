@@ -123,8 +123,9 @@ async function historique(heures) {
 
 async function lancerSynchro() {
   if (await synchroEnCours()) return { code: 409, corps: { message: 'Une synchronisation est déjà en cours.' } };
-  // Même commande que la tâche planifiée : journal, verrou et alertes identiques.
-  const enfant = spawn(process.execPath, [path.join('src', 'cli-synchro.js')], { cwd: RACINE, stdio: 'ignore', windowsHide: true });
+  // Même commande que la tâche planifiée (journal, verrou et alertes identiques), catalogue compris :
+  // une famille ou une variante supprimée à la main dans Shopify est recréée sans attendre le passage quotidien.
+  const enfant = spawn(process.execPath, [path.join('src', 'cli-synchro.js'), '--catalogue'], { cwd: RACINE, stdio: 'ignore', windowsHide: true });
   enfant.unref();
   return { code: 202, corps: { message: 'Synchronisation lancée.' } };
 }

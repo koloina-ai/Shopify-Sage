@@ -173,7 +173,7 @@
     const bouton = $('bouton-synchro');
     bouton.disabled = enCours;
     bouton.textContent = enCours ? 'Synchronisation en cours…' : 'Synchroniser maintenant';
-    $('bouton-note').textContent = enCours ? '' : 'Envoie tout de suite les derniers changements de Sage, sans attendre le prochain passage automatique.';
+    $('bouton-note').textContent = enCours ? '' : 'Envoie tout de suite les derniers changements de Sage (catalogue, prix et stocks), sans attendre le prochain passage automatique.';
 
     const v = e.vente || {};
     $('chiffres-boutique').replaceChildren(

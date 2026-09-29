@@ -51,3 +51,46 @@
 2026-09-29 09:57:16 --- 3/3 Commandes ---
 2026-09-29 09:57:16 Synchro des commandes désactivée (COMMANDES_MODE=off)
 2026-09-29 09:57:16 === OK en 5.8 s : Catalogue ✓   Stocks ✓   Commandes ✓ ===
+2026-09-29 16:17:57 === Synchro Sage -> Shopify ===
+2026-09-29 16:17:57 --- 1/2 Stocks ---
+2026-09-29 16:18:03 0 variante(s) gérée(s) — 0 stock(s) différent(s) de Sage (dépôt(s) Magasin SODICO)
+2026-09-29 16:18:03 --- 2/2 Commandes ---
+2026-09-29 16:18:04 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-29 16:18:04 === OK en 6.5 s : Stocks ✓   Commandes ✓ ===
+2026-09-29 16:18:54 === Synchro Sage -> Shopify ===
+2026-09-29 16:18:54 --- 1/2 Stocks ---
+2026-09-29 16:18:59 0 variante(s) gérée(s) — 0 stock(s) différent(s) de Sage (dépôt(s) Magasin SODICO)
+2026-09-29 16:18:59 --- 2/2 Commandes ---
+2026-09-29 16:19:00 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-29 16:19:00 === OK en 5.2 s : Stocks ✓   Commandes ✓ ===
+2026-09-29 16:25:27 === Synchro Sage -> Shopify ===
+2026-09-29 16:25:27 --- 1/2 Stocks ---
+2026-09-29 16:25:29 0 variante(s) gérée(s) — 0 stock(s) différent(s) de Sage (dépôt(s) Magasin SODICO)
+2026-09-29 16:25:29 --- 2/2 Commandes ---
+2026-09-29 16:25:29 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-29 16:25:29 === OK en 2.2 s : Stocks ✓   Commandes ✓ ===
+2026-09-29 16:27:00 === Synchro Sage -> Shopify --catalogue ===
+2026-09-29 16:27:00 --- 1/3 Catalogue ---
+2026-09-29 16:27:03 Familles : 05INJPO, 04ALU, 04FCX — 90 article(s) Sage, dépôt(s) Magasin SODICO
+2026-09-29 16:27:03 À faire : 3 famille(s) à créer (49 variantes), 0 variante(s) à ajouter, 0 variante(s) à mettre à jour, 0 prix bloqué(s), 2 signalement(s)
+2026-09-29 16:27:09 Familles créées : 3   Variantes ajoutées : 49   Mises à jour : 0   Erreurs : 0
+2026-09-29 16:27:09   ℹ 2 × pas de prix de vente dans Sage : variante non créée
+2026-09-29 16:27:09 Rapport : sortie/synchro-catalogue-2026-09-29T13-27-09-209Z.json
+2026-09-29 16:27:09 --- 2/3 Stocks ---
+2026-09-29 16:27:11 0 variante(s) gérée(s) — 0 stock(s) différent(s) de Sage (dépôt(s) Magasin SODICO)
+2026-09-29 16:27:11 --- 3/3 Commandes ---
+2026-09-29 16:27:11 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-29 16:27:11 === OK en 10.4 s : Catalogue ✓   Stocks ✓   Commandes ✓ ===
+2026-09-29 16:29:07 === Synchro Sage -> Shopify --catalogue ===
+2026-09-29 16:29:07 --- 1/3 Catalogue ---
+2026-09-29 16:29:12 Familles : 05INJPO, 04ALU, 04FCX — 90 article(s) Sage, dépôt(s) Magasin SODICO
+2026-09-29 16:29:12 À faire : 0 famille(s) à créer (0 variantes), 0 variante(s) à ajouter, 0 variante(s) à mettre à jour, 0 prix bloqué(s), 2 signalement(s)
+2026-09-29 16:29:12 Familles créées : 0   Variantes ajoutées : 0   Mises à jour : 0   Erreurs : 0
+2026-09-29 16:29:12   ℹ 2 × pas de prix de vente dans Sage : variante non créée
+2026-09-29 16:29:12 Rapport : sortie/synchro-catalogue-2026-09-29T13-29-12-212Z.json
+2026-09-29 16:29:12 --- 2/3 Stocks ---
+2026-09-29 16:29:16 49 variante(s) gérée(s) — 0 stock(s) différent(s) de Sage (dépôt(s) Magasin SODICO)
+2026-09-29 16:29:16   49 sans ligne de stock dans Sage (non modifiées)
+2026-09-29 16:29:16 --- 3/3 Commandes ---
+2026-09-29 16:29:16 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-29 16:29:16 === OK en 8.6 s : Catalogue ✓   Stocks ✓   Commandes ✓ ===

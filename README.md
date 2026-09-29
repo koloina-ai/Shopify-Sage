@@ -14,7 +14,7 @@ Variables lues dans `.env` puis `../env.local` :
 | `SHOPIFY_API_VERSION` | défaut `2026-07` |
 | `SHOPIFY_LOCATION_ID` | emplacement de stock (défaut : le plus ancien de la boutique) |
 | `SAGE_SQL_CONNECTION` | chaîne ODBC (défaut : `localhost`, base `SODICO_TEST`, authentification Windows) |
-| `CATALOGUE_FAMILLES` | familles Sage synchronisées : codes séparés par des virgules, ou `*` |
+| `CATALOGUE_FAMILLES` | vide (défaut) : toutes les familles de Sage ; sinon restreint à ces codes (test) |
 | `STOCK_DEPOTS` | dépôts additionnés pour le stock (défaut : `Magasin SODICO`) |
 
 Scopes Shopify nécessaires : `read_products`, `write_products`, `read_inventory`, `write_inventory` (plus `read_orders`, `write_orders` seulement si les commandes sont activées).
@@ -24,10 +24,10 @@ Scopes Shopify nécessaires : `read_products`, `write_products`, `read_inventory
 ```bash
 npm install
 npm run catalogue -- --famille 05INJPO --simulation   # montre ce qui serait créé / mis à jour, sans rien envoyer
-npm run catalogue                                     # familles de CATALOGUE_FAMILLES : crée et met à jour
+npm run catalogue                                     # toutes les familles de Sage : crée et met à jour
 npm run stocks                                        # stocks : n'envoie que les différences
 npm run synchro                                       # à planifier toutes les 15 min : stocks, + catalogue 1 fois par jour
-npm run synchro -- --catalogue                        # force le passage du catalogue maintenant
+npm run synchro-catalogue                             # force le passage du catalogue maintenant (= bouton de la page)
 npm run verifier                                      # compare Shopify et Sage (prix, code-barre, stock)
 npm test                                              # 20 tests automatiques (sans Shopify ni Sage)
 ```
@@ -42,7 +42,8 @@ npm test                                              # 20 tests automatiques (s
 | `AR_CodeBarre` | Code-barre de la variante |
 | `STO_DISPO` des dépôts `STOCK_DEPOTS` | Stock de la variante |
 
-- **Périmètre** : `CATALOGUE_FAMILLES` (codes séparés par des virgules, ou `*`). Pas de filtre `AR_Publie` (note du 24/09).
+- **Périmètre** : toutes les familles de Sage et tous leurs articles, lus dans la base à chaque passage (une famille créée
+  dans Sage arrive seule). Pas de filtre `AR_Publie` (note du 24/09). `CATALOGUE_FAMILLES` ne sert qu'à restreindre un test.
 - **Création** (`npm run catalogue`) : une famille absente est créée avec ses articles actifs et à prix. Un nouvel article
   dans une famille existante devient une nouvelle variante. Variantes toujours suivies en stock, sans vente au-delà du stock.
 - **Mise à jour** : prix, code-barre, et désignation **seulement si SODICO ne l'a pas renommée** dans Shopify

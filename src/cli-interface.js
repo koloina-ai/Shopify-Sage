@@ -4,7 +4,9 @@
 
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { parseEnv } from 'node:util';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -121,11 +123,29 @@ async function historique(heures) {
 
 // ---------- Actions ----------
 
+// Le bouton lance « npm run synchro-catalogue » : catalogue (familles, variantes, prix, code-barre), stocks, commandes.
+// Journal, verrou et alertes identiques à la tâche planifiée. Arguments repris de package.json (node lancé
+// directement : npm.cmd exigerait un shell sous Windows).
+const SCRIPT_SYNCHRO = 'synchro-catalogue';
+const FICHIERS_ENV = ['.env', '../env.local'];
+// Variables venues des fichiers .env au démarrage de la page : retirées de l'environnement transmis, pour que la synchro
+// relise les fichiers à chaque clic (un .env modifié s'applique sans redémarrer la page, une ligne supprimée aussi).
+const VARIABLES_FICHIERS = new Map(
+  FICHIERS_ENV.flatMap((f) => {
+    try {
+      return Object.entries(parseEnv(readFileSync(path.join(RACINE, f), 'utf8')));
+    } catch {
+      return [];
+    }
+  }),
+);
+
 async function lancerSynchro() {
   if (await synchroEnCours()) return { code: 409, corps: { message: 'Une synchronisation est déjà en cours.' } };
-  // Même commande que la tâche planifiée (journal, verrou et alertes identiques), catalogue compris :
-  // une famille ou une variante supprimée à la main dans Shopify est recréée sans attendre le passage quotidien.
-  const enfant = spawn(process.execPath, [path.join('src', 'cli-synchro.js'), '--catalogue'], { cwd: RACINE, stdio: 'ignore', windowsHide: true });
+  const script = JSON.parse(await readFile(path.join(RACINE, 'package.json'), 'utf8')).scripts?.[SCRIPT_SYNCHRO];
+  if (!script?.startsWith('node ')) return { code: 500, corps: { message: `Script « ${SCRIPT_SYNCHRO} » introuvable dans package.json.` } };
+  const env = Object.fromEntries(Object.entries(process.env).filter(([k, v]) => VARIABLES_FICHIERS.get(k) !== v));
+  const enfant = spawn(process.execPath, script.split(/\s+/).slice(1), { cwd: RACINE, env, stdio: 'ignore', windowsHide: true });
   enfant.unref();
   return { code: 202, corps: { message: 'Synchronisation lancée.' } };
 }

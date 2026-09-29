@@ -11,9 +11,15 @@ export async function connecterSage() {
 export const depotsStock = () =>
   (process.env.STOCK_DEPOTS || 'Magasin SODICO').split(',').map((d) => d.trim()).filter(Boolean);
 
-/** Familles synchronisées : CATALOGUE_FAMILLES (codes séparés par des virgules, ou * pour toutes). */
-export const famillesCatalogue = () =>
-  (process.env.CATALOGUE_FAMILLES || '').split(',').map((f) => f.trim()).filter(Boolean);
+/**
+ * Familles synchronisées : par défaut toutes celles de Sage (['*'], lues dans F_ARTICLE à chaque passage :
+ * une famille créée dans Sage arrive seule sur la boutique). CATALOGUE_FAMILLES (codes séparés par des virgules)
+ * permet de restreindre, pour un test.
+ */
+export const famillesCatalogue = () => {
+  const codes = (process.env.CATALOGUE_FAMILLES || '').split(',').map((f) => f.trim()).filter(Boolean);
+  return codes.length ? codes : ['*'];
+};
 
 function filtreFamilles(req, familles) {
   if (familles.includes('*')) return '1 = 1';
@@ -32,7 +38,6 @@ function filtreDepots(req, depots) {
  * @param {string[]} familles  codes FA_CodeFamille, ou ['*']
  */
 export async function lireArticlesFamilles(pool, familles, depots = depotsStock()) {
-  if (!familles.length) throw new Error('Aucune famille à synchroniser : renseigner CATALOGUE_FAMILLES (codes famille Sage, ou *)');
   const req = pool.request();
   const { recordset } = await req.query(`
     SELECT a.AR_Ref, a.AR_Design, ISNULL(a.AR_PrixVen, 0) AS AR_PrixVen, a.AR_CodeBarre, a.FA_CodeFamille, a.AR_Sommeil,

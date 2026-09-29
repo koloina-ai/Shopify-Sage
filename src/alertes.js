@@ -40,6 +40,11 @@ const DIAGNOSTICS = [
     action: 'Contacter l\'équipe technique (fichier .env du serveur).',
   },
   {
+    motif: /Cannot find module|Cannot find package|ERR_MODULE_NOT_FOUND/i,
+    probleme: 'Le connecteur est incomplètement installé sur ce poste.',
+    action: 'Contacter l\'équipe technique (lancer npm install dans le dossier du connecteur).',
+  },
+  {
     motif: /Périmètre inconnu|Aucune synchro précédente/i,
     probleme: 'Le connecteur n\'a pas été initialisé.',
     action: 'Contacter l\'équipe technique (première synchro à lancer à la main).',

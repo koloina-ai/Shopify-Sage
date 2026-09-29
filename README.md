@@ -14,73 +14,61 @@ Variables lues dans `.env` puis `../env.local` :
 | `SHOPIFY_API_VERSION` | défaut `2026-07` |
 | `SHOPIFY_LOCATION_ID` | emplacement de stock (défaut : le plus ancien de la boutique) |
 | `SAGE_SQL_CONNECTION` | chaîne ODBC (défaut : `localhost`, base `SODICO_TEST`, authentification Windows) |
+| `CATALOGUE_FAMILLES` | familles Sage synchronisées : codes séparés par des virgules, ou `*` |
+| `STOCK_DEPOTS` | dépôts additionnés pour le stock (défaut : `Magasin SODICO`) |
 
-Scopes Shopify utilisés : `read_products`, `write_products`, `read_inventory`, `write_inventory`, `read_orders`, `read_all_orders`.
+Scopes Shopify nécessaires : `read_products`, `write_products`, `read_inventory`, `write_inventory` (plus `read_orders`, `write_orders` seulement si les commandes sont activées).
 
 ## Commandes
 
 ```bash
 npm install
-npm run synchro -- --poc           # 1re fois : fixe le périmètre (poc ou --tout), puis produits + stocks
-npm run synchro                    # ensuite : produits (modifiés + absents de Shopify) puis stocks
-npm run produits -- --poc          # envoie les produits « prêts POC » (prix + stock + EAN valide)
-npm run produits                   # incrémental : modifiés dans Sage depuis la dernière synchro + absents de Shopify
-npm run produits -- --ref 03520224 # un article précis
-npm run produits -- --simulation   # affiche ce qui serait envoyé, sans rien envoyer
-npm run stocks                     # stocks : compare Sage et Shopify, n'envoie que les différences
-npm run stocks -- --simulation     # affiche les écarts de stock sans rien envoyer
-npm run verifier                   # compare Shopify et Sage (SKU, code-barre, prix, stock)
-npm run commandes -- --limite 10   # récupère les commandes Shopify
+npm run catalogue -- --famille 05INJPO --simulation   # montre ce qui serait créé / mis à jour, sans rien envoyer
+npm run catalogue                                     # familles de CATALOGUE_FAMILLES : crée et met à jour
+npm run stocks                                        # stocks : n'envoie que les différences
+npm run synchro                                       # à planifier toutes les 15 min : stocks, + catalogue 1 fois par jour
+npm run synchro -- --catalogue                        # force le passage du catalogue maintenant
+npm run verifier                                      # compare Shopify et Sage (prix, code-barre, stock)
+npm test                                              # 20 tests automatiques (sans Shopify ni Sage)
 ```
 
-## Règles de correspondance
+## Modèle : 1 famille Sage = 1 produit, 1 article = 1 variante
 
-- Article publiable = `AR_Sommeil = 0`, `AR_Publie = 1`, `AR_PrixVen > 0`.
-- Produit Shopify retrouvé par son handle `sage-<AR_Ref>` : relancer ne crée pas de doublon.
-- SKU = `AR_Ref`, code-barre = `AR_CodeBarre`, prix = `AR_PrixVen` (HT), type = `AR_Stat02`,
-  tags = `sage`, famille, `AR_Stat04`, poids = `AR_PoidsBrut` (ou net) selon `AR_UnitePoids`.
-- Stock = somme de `STO_DISPO` du dépôt principal (`DP_STOCKS`, `STO_DEPPRINC = 'OUI'`), arrondie à l'entier inférieur.
-- Incrémental sur `F_ARTICLE.cbModification`, plus les articles du périmètre absents de Shopify
-  (nouveaux ou supprimés à la main : Sage fait foi). État dans `etat/synchro-produits.json`
-  (date + périmètre `poc`/`tout`), mis à jour seulement si la synchro s'est terminée sans erreur.
-- La présence dans Shopify est lue via la recherche (`tag:sage`), indexée avec quelques secondes de retard :
-  un produit tout juste créé peut ne pas encore y figurer. Sans conséquence (upsert par handle, pas de doublon),
-  il est pris en compte au passage suivant.
+| Sage | Shopify |
+|---|---|
+| Famille `FA_CodeFamille` (ex. `05INJPO`) | Produit `famille-05injpo`, titre « Famille 05INJPO » (modifiable ensuite dans Shopify) |
+| Article `AR_Ref` | Variante, **SKU = `AR_Ref`**, option « Article » = `AR_Design` |
+| `AR_PrixVen` (HT) | Prix de la variante |
+| `AR_CodeBarre` | Code-barre de la variante |
+| `STO_DISPO` des dépôts `STOCK_DEPOTS` | Stock de la variante |
+
+- **Périmètre** : `CATALOGUE_FAMILLES` (codes séparés par des virgules, ou `*`). Pas de filtre `AR_Publie` (note du 24/09).
+- **Création** (`npm run catalogue`) : une famille absente est créée avec ses articles actifs et à prix. Un nouvel article
+  dans une famille existante devient une nouvelle variante. Variantes toujours suivies en stock, sans vente au-delà du stock.
+- **Mise à jour** : prix, code-barre, et désignation **seulement si SODICO ne l'a pas renommée** dans Shopify
+  (la désignation Sage d'origine est mémorisée dans le champ de variante `sage.designation`).
+- **Prix à 0 dans Sage** : variante non créée, ou prix Shopify conservé, et signalé.
+- **Article en sommeil** : jamais créé. S'il est déjà en ligne : **stock 0** et signalement, la variante reste visible.
+- **Article sans ligne de stock** : stock Shopify non modifié (jamais mis à 0 par défaut d'information).
+- **Article changé de famille dans Sage**, **variante Shopify sans article Sage** : non modifiés, signalés.
+- **Fréquences** : stocks à chaque `synchro`. Catalogue et prix une fois par jour (`CATALOGUE_INTERVALLE_HEURES`, 24 par défaut),
+  mémorisé dans `etat/catalogue.json`.
 
 ## Protection de la boutique Shopify
 
-Le connecteur **ne supprime jamais rien**. Il ne modifie que les produits **qu'il a créés** (adresse `sage-<AR_Ref>`,
-champ `sage.ar_ref` égal au SKU, une seule variante), et sur ces produits **seulement les champs qu'il gère** :
+Le connecteur **ne supprime jamais rien**. Il ne modifie que les familles **qu'il a créées** (adresse `famille-<code>` et champ
+produit `sage.famille`), et sur leurs variantes **seulement** : prix, code-barre, désignation non renommée, stock.
 
-| Géré par le connecteur (Sage fait foi) | Laissé à SODICO dans Shopify (jamais modifié) |
-|---|---|
-| titre, fournisseur, type de produit | photos, description, SEO |
-| prix, code-barre, poids, SKU | prix barré (promo), politique de vente hors stock |
-| stock disponible | étiquettes ajoutées à la main |
-| ses étiquettes (`sage`, famille, statistique) | champs personnalisés (hors `sage.*`) |
-| ses champs `sage.*` | statut choisi à la main (produit masqué) |
-
-- La création utilise `productSet`. Les mises à jour utilisent `productUpdate`, `productVariantsBulkUpdate`, `metafieldsSet`
-  et `tagsAdd`/`tagsRemove`, jamais un remplacement complet. Avant une création, on vérifie directement que l'adresse est libre.
-- **`sage-ignorer`** : étiquette posée par SODICO sur un produit. Le connecteur n'y touche plus (ni mise à jour, ni stock, ni retrait).
-- **Retrait** : produit en brouillon et marqué `sage-retire`. Seuls ces produits sont remis en vente automatiquement :
-  un produit masqué à la main reste masqué.
+- Titre, description, photos, SEO, étiquettes, statut du produit : définis à la création, **jamais écrasés ensuite**.
+- Avant une création, on vérifie directement que l'adresse est libre : un produit existant n'est jamais écrasé.
+- **`sage-ignorer`** : étiquette posée par SODICO sur une famille. Le connecteur n'y touche plus (ni catalogue, ni stock).
 - **Garde-fou prix** : une variation de plus de `PRIX_VARIATION_MAX` (50 % par défaut, 0 = désactivé) n'est pas appliquée,
-  mais signalée (journal, page, résumé). `--forcer-prix` l'applique. Corriger le prix dans Sage le fait repartir normalement.
-- **Garde-fou stocks** : si plus de 20 % des produits (et plus de 5) tombent à 0 d'un coup, ces mises à zéro sont bloquées,
-  les autres appliquées, et une alerte part. `--forcer-stocks` les applique. Un article sans ligne de stock n'est jamais mis à 0.
-- **Garde-fou retrait** : pas plus de 20 % des produits retirés d'un coup (`--forcer-retrait`).
-- `PRODUITS_STATUT_CREATION=DRAFT` crée les nouveaux produits en brouillon, pour relecture avant publication
-  (conseillé pour la première synchro du catalogue complet).
-- `npm test` : 18 tests automatiques des règles de protection et de conversion (sans Shopify ni Sage).
-
-## Retrait des produits
-
-À chaque synchro (hors `--ref`), un produit actif dans Shopify dont l'article n'est plus éligible dans Sage
-(sommeil, décoché « publié », sans prix, supprimé, ou sorti du périmètre POC) passe en **brouillon** :
-il disparaît de la boutique sans être supprimé. Il redevient actif dès qu'il est de nouveau éligible.
-Garde-fou : si plus de 20 % des produits actifs (et plus de 5) seraient retirés d'un coup, rien n'est retiré
-et la synchro se termine en échec ; `--forcer-retrait` lève la limite.
+  mais signalée (journal, page, résumé). `--forcer-prix` l'applique.
+- **Garde-fou stocks** : si plus de 20 % des variantes (et plus de 5) tombent à 0 d'un coup, ces mises à zéro sont bloquées,
+  les autres appliquées, et une alerte part. `--forcer-stocks` les applique.
+- **Concurrence** : l'envoi du stock passe la quantité lue (`changeFromQuantity`) : si le stock Shopify a bougé entre-temps
+  (commande), Shopify refuse au lieu d'écraser ; le passage suivant reprend.
+- `PRODUITS_STATUT_CREATION=DRAFT` crée les nouvelles familles en brouillon, pour relecture avant publication.
 
 ## Alertes e-mail et résumé quotidien
 
@@ -89,7 +77,7 @@ Variables `SMTP_*`, `ALERTE_A` (voir `.env.example`) ; sans elles, rien n'est en
 - `npm run synchro` envoie un e-mail à la première panne (diagnostic en clair + action), un rappel toutes les
   `RAPPEL_HEURES` h tant qu'elle dure, et un e-mail au rétablissement. État dans `etat/alertes.json`. Pas d'alerte en `--simulation`.
 - `npm run resume` (à planifier chaque matin) : synchros des dernières 24 h (`--heures N`), changements envoyés,
-  articles publiés dans Sage mais pas en ligne avec la raison et quoi corriger (CSV joint). `--afficher` : terminal, sans e-mail.
+  articles des familles synchronisées non mis en ligne, avec la raison et quoi corriger (CSV joint). `--afficher` : terminal, sans e-mail.
 - `SMTP_HOST=fichier` : mode test, les e-mails sont écrits dans `sortie/emails/*.eml`.
 
 ## Page de suivi
@@ -156,17 +144,12 @@ Les deux options utilisent la même étiquette `sage-transmise` : une commande t
 journaux et rapports de plus de `JOURS_CONSERVATION` jours (30 par défaut). Installation de la tâche toutes les
 15 minutes : voir [PLANIFICATION.md](PLANIFICATION.md).
 
-## Stocks
-
-Une variation de stock seule ne change pas `cbModification` : `npm run produits` ne la voit pas.
-`npm run stocks` compare donc, à chaque passage, le disponible Sage au disponible Shopify de tous les produits `tag:sage`
-et n'envoie que les écarts. L'envoi passe la quantité lue (`changeFromQuantity`) : si le stock Shopify a bougé
-entre-temps (commande), Shopify refuse la mise à jour au lieu de l'écraser ; le passage suivant la reprend.
-
 ## Limites connues
 
-- Pas encore gérés : gammes (variantes), conditionnements, prix par catégorie tarifaire (`F_ARTCLIENT`), clients B2B, photos.
-- Un produit passé à la main en brouillon dans Shopify est remis en vente s'il est éligible dans Sage (Sage fait foi).
+- Titre de famille = code Sage (le libellé de famille n'est pas dans l'extraction) : à renommer dans Shopify.
+- Rattachement aux familles de la vraie boutique sodico.re (familles regroupées à la main) : à définir avec Eugenie.
+- Pas encore gérés : conditionnements (`F_CONDITION`), prix par catégorie tarifaire (`F_ARTCLIENT`), clients B2B, photos.
+- Pilote SQL `msnodesqlv8` : Windows uniquement (passer à `tedious` pour O2switch).
 
 
 USE SODICO_TEST;

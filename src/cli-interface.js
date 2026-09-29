@@ -11,9 +11,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { configShopify } from './config.js';
 import { creerClient } from './shopify.js';
-import { articlesBloques, connecterSage } from './sage.js';
-import { emplacementParDefaut } from './produits.js';
-import { lireStocksShopify } from './stocks.js';
+import { articlesBloques, connecterSage, famillesCatalogue } from './sage.js';
+import { emplacementParDefaut, lireFamillesShopify } from './familles.js';
 import { diagnostiquer } from './alertes.js';
 import { csvArticles, lireChangements, lirePassages, synchroEnCours } from './suivi.js';
 import { modeCommandes } from './commandes-sage/index.js';
@@ -53,10 +52,10 @@ const lireJson = async (fichier) => JSON.parse(await readFile(fichier, 'utf8').c
 const produitsEnVente = enCache(60_000, async () => {
   try {
     const client = creerClient(configShopify());
-    const produits = await lireStocksShopify(client, await emplacementParDefaut(client));
-    const geres = produits.filter((p) => p.proprietaire);
+    const geres = (await lireFamillesShopify(client, await emplacementParDefaut(client))).filter((f) => f.proprietaire);
     return {
       actifs: geres.filter((p) => p.statut === 'ACTIVE').length,
+      variantes: geres.filter((p) => p.statut === 'ACTIVE').reduce((n, f) => n + f.variantes.length, 0),
       brouillons: geres.filter((p) => p.statut !== 'ACTIVE').length,
       ignores: geres.filter((p) => p.ignore).length,
     };
@@ -66,17 +65,17 @@ const produitsEnVente = enCache(60_000, async () => {
 });
 
 const bloques = enCache(60_000, async () => {
-  const { perimetre = 'poc' } = await lireJson('etat/synchro-produits.json');
+  const familles = famillesCatalogue();
   let pool;
   try {
     pool = await connecterSage();
-    const articles = await articlesBloques(pool, perimetre);
+    const articles = await articlesBloques(pool, familles);
     const parRaison = Object.values(Object.groupBy(articles, (a) => a.raison))
       .map((liste) => ({ raison: liste[0].raison, aCorriger: liste[0].aCorriger, nombre: liste.length }))
       .sort((a, b) => b.nombre - a.nombre);
-    return { perimetre, total: articles.length, parRaison, articles };
+    return { familles, total: articles.length, parRaison, articles };
   } catch (err) {
-    return { erreur: `Sage inaccessible : ${err.message}`, perimetre, total: 0, parRaison: [], articles: [] };
+    return { erreur: `Sage inaccessible : ${err.message}`, familles, total: 0, parRaison: [], articles: [] };
   } finally {
     await pool?.close();
   }
@@ -87,7 +86,7 @@ async function etat() {
     lirePassages(Date.now() - 24 * HEURE),
     synchroEnCours(),
     lireJson('etat/alertes.json'),
-    lireJson('etat/synchro-produits.json'),
+    lireJson('etat/catalogue.json'),
     produitsEnVente(),
   ]);
   const dernier = passages.at(-1) ?? null;
@@ -106,7 +105,7 @@ async function etat() {
     minutesDepuis,
     panneDepuis: alertes.enPanne ? alertes.depuis : null,
     passages24h: { total: passages.length, echecs: passages.filter((p) => !p.ok).length },
-    perimetre: etatProduits.perimetre ?? null,
+    catalogue: { dernier: etatProduits.dernier ?? null, familles: famillesCatalogue() },
     commandes: { mode: modeCommandes(), simulation: process.env.OM_SIMULATION === 'oui' },
     vente,
   };

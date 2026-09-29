@@ -3,13 +3,11 @@
 // --afficher : affiche le résumé dans le terminal sans envoyer d'e-mail.
 
 import { parseArgs } from 'node:util';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { configShopify } from './config.js';
 import { creerClient } from './shopify.js';
-import { articlesBloques, connecterSage } from './sage.js';
-import { emplacementParDefaut } from './produits.js';
-import { lireStocksShopify } from './stocks.js';
+import { articlesBloques, connecterSage, famillesCatalogue } from './sage.js';
+import { emplacementParDefaut, lireFamillesShopify } from './familles.js';
 import { echapper, envoyerEmail, gabaritHtml } from './email.js';
 import { csvArticles, lireChangements, lirePassages } from './suivi.js';
 
@@ -26,18 +24,16 @@ const MAX_LIGNES = 15; // au-delà, la liste complète est dans la pièce jointe
 
 let pool;
 try {
-  const etatProduits = JSON.parse(await readFile('etat/synchro-produits.json', 'utf8').catch(() => '{}'));
-  const perimetre = etatProduits.perimetre ?? 'poc';
 
   const [passages, changements] = await Promise.all([lirePassages(depuis), lireChangements(depuis)]);
   pool = await connecterSage();
-  const bloques = await articlesBloques(pool, perimetre);
+  const bloques = await articlesBloques(pool, famillesCatalogue());
 
   let enLigne = null;
   try {
     const client = creerClient(configShopify());
-    const produits = await lireStocksShopify(client, await emplacementParDefaut(client));
-    enLigne = produits.filter((p) => p.proprietaire && p.statut === 'ACTIVE').length;
+    const familles = (await lireFamillesShopify(client, await emplacementParDefaut(client))).filter((f) => f.proprietaire && f.statut === 'ACTIVE');
+    enLigne = `${familles.length} famille(s), ${familles.reduce((n, f) => n + f.variantes.length, 0)} variante(s)`;
   } catch {
     // Shopify injoignable : le résumé part quand même, sans ce chiffre
   }
@@ -57,11 +53,9 @@ try {
         : `⚠️ ${echecs.length} synchronisation(s) en échec sur ${passages.length} (dernier échec : ${dernierEchec.date.toLocaleString('fr-FR', { timeStyle: 'short', dateStyle: 'short' })}).`;
 
   const lignesChangements = [
-    `${changements.crees} produit(s) ajouté(s) sur la boutique`,
-    `${changements.misAJour} produit(s) mis à jour (prix, nom…)`,
+    `${changements.famillesCreees} famille(s) créée(s), ${changements.variantesAjoutees} variante(s) ajoutée(s) sur la boutique`,
+    `${changements.variantesMisesAJour} variante(s) mise(s) à jour (prix, code-barre, désignation)`,
     `${changements.stocks} stock(s) corrigé(s)`,
-    `${changements.retires.length} produit(s) retiré(s) de la vente`,
-    `${changements.reactives.length} produit(s) remis en vente`,
     ...(changements.prixBloques.length ? [`${changements.prixBloques.length} prix NON appliqué(s), variation trop forte à vérifier dans Sage : ` +
       changements.prixBloques.slice(0, MAX_LIGNES).map((p) => `${p.ref} ${p.ancien} → ${p.nouveau} €`).join(', ')] : []),
     ...(changements.stocksBloques ? [`${changements.stocksBloques} mise(s) à zéro de stock bloquée(s) par sécurité`] : []),
@@ -74,13 +68,12 @@ try {
     `Résumé du connecteur Sage -> Shopify — ${jour} (${periode})`,
     '',
     etatTexte,
-    enLigne !== null ? `Produits en vente sur la boutique : ${enLigne}` : '',
+    enLigne !== null ? `En vente sur la boutique : ${enLigne}` : '',
     '',
     'Changements envoyés à Shopify :',
     ...lignesChangements.map((l) => `  - ${l}`),
-    ...changements.retires.slice(0, MAX_LIGNES).map((r) => `      retiré : ${r.ref} (${r.raison})`),
     '',
-    `Articles « publiés » dans Sage mais pas en ligne : ${bloques.length}`,
+    `Articles des familles synchronisées non mis en ligne : ${bloques.length}`,
     ...parRaison.map(([raison, liste]) => `  - ${liste.length} : ${raison} → à corriger dans ${liste[0].aCorriger}`),
     bloques.length ? 'Liste complète en pièce jointe (à ouvrir avec Excel).' : '',
   ].join('\n');
@@ -89,11 +82,10 @@ try {
     `Résumé du ${jour}`,
     toutVaBien ? '#2e7d32' : '#ef6c00',
     `<p style="font-size:16px">${echapper(etatTexte)}</p>
-     ${enLigne !== null ? `<p>Produits en vente sur la boutique : <b>${enLigne}</b></p>` : ''}
+     ${enLigne !== null ? `<p>En vente sur la boutique : <b>${enLigne}</b></p>` : ''}
      <h3>Changements envoyés à Shopify (${echapper(periode)})</h3>
      <ul>${lignesChangements.map((l) => `<li>${echapper(l)}</li>`).join('')}</ul>
-     ${changements.retires.length ? `<p>Produits retirés :</p><ul>${changements.retires.slice(0, MAX_LIGNES).map((r) => `<li>${echapper(r.ref)} — ${echapper(r.raison)}</li>`).join('')}</ul>` : ''}
-     <h3>Articles « publiés » dans Sage mais pas en ligne : ${bloques.length}</h3>
+     <h3>Articles des familles synchronisées non mis en ligne : ${bloques.length}</h3>
      ${parRaison.length ? `<table cellpadding="6" style="border-collapse:collapse">
         <tr style="background:#f0f0f0"><th align="right">Nombre</th><th align="left">Raison</th><th align="left">À corriger dans Sage</th></tr>
         ${parRaison.map(([raison, liste]) => `<tr><td align="right"><b>${liste.length}</b></td><td>${echapper(raison)}</td><td>${echapper(liste[0].aCorriger)}</td></tr>`).join('')}

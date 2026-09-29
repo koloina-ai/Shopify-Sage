@@ -45,18 +45,21 @@ export async function lirePassages(depuis, { avecSimulations = false } = {}) {
 
 /** Cumul des rapports de synchro (sortie/*.json) depuis une date. */
 export async function lireChangements(depuis) {
-  const total = { crees: 0, misAJour: 0, reactives: [], retires: [], prixBloques: [], stocks: 0, stocksBloques: 0, commandes: 0, commandesAVerifier: [], erreurs: 0 };
+  const total = {
+    famillesCreees: 0, variantesAjoutees: 0, variantesMisesAJour: 0, prixBloques: [], signalements: [],
+    stocks: 0, stocksBloques: 0, commandes: 0, commandesAVerifier: [], erreurs: 0,
+  };
   for (const f of await readdir('sortie').catch(() => [])) {
-    if (!/^synchro-(produits|stocks|commandes)-.*\.json$/.test(f)) continue;
+    if (!/^synchro-(catalogue|stocks|commandes)-.*\.json$/.test(f)) continue;
     const fichier = path.join('sortie', f);
     if ((await stat(fichier)).mtimeMs < depuis) continue;
     const r = JSON.parse(await readFile(fichier, 'utf8'));
-    if (f.startsWith('synchro-produits')) {
-      total.crees += r.crees?.length ?? 0;
-      total.misAJour += r.misAJour?.length ?? 0;
-      total.reactives.push(...(r.reactives ?? []));
-      total.retires.push(...(r.retires ?? []));
+    if (f.startsWith('synchro-catalogue')) {
+      total.famillesCreees += r.famillesCreees?.length ?? 0;
+      total.variantesAjoutees += r.variantesAjoutees?.length ?? 0;
+      total.variantesMisesAJour += r.variantesMisesAJour?.length ?? 0;
       total.prixBloques.push(...(r.prixBloques ?? []));
+      total.signalements = r.signalements ?? total.signalements; // les signalements du dernier passage suffisent
     } else if (f.startsWith('synchro-commandes')) {
       const nouvelles = (r.transmises ?? []).filter((t) => !t.deja);
       total.commandes += nouvelles.length;

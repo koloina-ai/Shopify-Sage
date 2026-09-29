@@ -84,7 +84,7 @@
   </section>
 
   <section>
-    <h2>Articles « publiés » dans Sage mais absents de la boutique</h2>
+    <h2>Articles des familles synchronisées non mis en ligne</h2>
     <p class="note" id="bloques-intro">Chargement…</p>
     <table id="bloques-raisons"></table>
     <details id="bloques-details" style="margin-top:14px">
@@ -177,9 +177,10 @@
 
     const v = e.vente || {};
     $('chiffres-boutique').replaceChildren(
-      chiffre(v.actifs, 'produits en vente'),
-      chiffre(v.brouillons, 'produits retirés de la vente (brouillon)'),
-      ...(v.ignores ? [chiffre(v.ignores, 'produits protégés (étiquette sage-ignorer)')] : []),
+      chiffre(v.actifs, 'familles en vente'),
+      chiffre(v.variantes, 'variantes (articles) en vente'),
+      ...(v.brouillons ? [chiffre(v.brouillons, 'familles masquées (brouillon)')] : []),
+      ...(v.ignores ? [chiffre(v.ignores, 'familles protégées (étiquette sage-ignorer)')] : []),
       ...(v.erreur ? [el('p', { class: 'note' }, 'Shopify injoignable pour le moment : chiffres indisponibles.')] : []),
     );
     const modes = {
@@ -194,17 +195,17 @@
   async function chargerChangements() {
     const c = await api('/api/changements?heures=24');
     $('chiffres-changements').replaceChildren(
-      chiffre(c.crees, 'produits ajoutés'),
-      chiffre(c.misAJour, 'produits mis à jour (prix, nom…)'),
+      chiffre(c.famillesCreees, 'familles créées'),
+      chiffre(c.variantesAjoutees, 'variantes ajoutées'),
+      chiffre(c.variantesMisesAJour, 'variantes mises à jour (prix, code-barre…)'),
       chiffre(c.stocks, 'stocks corrigés'),
-      chiffre(c.retires.length, 'produits retirés de la vente'),
-      chiffre(c.reactives.length, 'produits remis en vente'),
       chiffre(c.commandes, 'commandes transmises à Sage'),
     );
     $('retires').replaceChildren(
-      ...(c.retires.length
-        ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, 'Produits retirés :')),
-           el('ul', { class: 'liste' }, c.retires.map((r) => el('li', {}, `${r.ref} — ${r.raison}`)))]
+      ...(c.signalements.length
+        ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, 'À savoir (dernier passage du catalogue) :')),
+           el('ul', { class: 'liste' }, Object.entries(c.signalements.reduce((m, s) => ((m[s.raison] = (m[s.raison] ?? 0) + 1), m), {}))
+             .sort((a, b) => b[1] - a[1]).map(([raison, n]) => el('li', {}, `${n} × ${raison}`)))]
         : []),
       ...(c.prixBloques.length
         ? [el('p', { style: 'margin:14px 0 0' }, el('b', {}, 'Prix non appliqués (variation trop forte, à vérifier dans Sage) :')),
@@ -242,7 +243,7 @@
       $('bloques-intro').textContent = 'Aucun : tous les articles publiés dans Sage sont en vente sur la boutique.';
     } else {
       $('bloques-intro').textContent =
-        `${fmtNombre(b.total)} article(s) sont cochés « publié » dans Sage mais ne sont pas envoyés sur la boutique. ` +
+        `${fmtNombre(b.total)} article(s) actif(s) des familles synchronisées ne sont pas mis en ligne. ` +
         'Il suffit de corriger la fiche dans Sage : ils apparaîtront automatiquement au passage suivant.';
     }
     $('bloques-raisons').replaceChildren(
@@ -259,7 +260,7 @@
   const lignesUtiles = (lignes) =>
     lignes
       .map((l) => l.texte)
-      .filter((t) => /Créés|stock\(s\) différent|retiré :|remis en vente|Erreur|⚠/.test(t))
+      .filter((t) => /Familles créées : [1-9]|ajoutées : [1-9]|Mises à jour : [1-9]|stock\(s\) différent|Erreur :|✗|⚠/.test(t))
       .filter((t) => !/— 0 stock\(s\) différent/.test(t) && !/^\s*[│┌└├]/.test(t));
 
   async function chargerHistorique() {

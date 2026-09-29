@@ -1,14 +1,16 @@
 // Synchro des stocks Sage -> Shopify : npm run stocks -- [--simulation] [--forcer-stocks]
-// Compare le disponible Sage (DP_STOCKS, dépôt principal) au disponible Shopify de chaque produit géré par le connecteur
-// et n'envoie que les différences. Indépendant de cbModification : détecte aussi les mouvements de stock seuls.
+// Pour chaque variante des familles gérées par le connecteur (SKU = référence Sage) : compare le disponible Sage
+// (dépôts STOCK_DEPOTS) au disponible Shopify, et n'envoie que les différences.
+// Article en sommeil dans Sage : stock 0 (plus vendable, mais la variante reste visible).
+// Article sans ligne de stock dans Sage : stock Shopify non modifié (jamais mis à 0 par défaut d'information).
 
 import { parseArgs } from 'node:util';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { configShopify } from './config.js';
 import { creerClient } from './shopify.js';
-import { connecterSage, lireStocks } from './sage.js';
-import { emplacementParDefaut } from './produits.js';
-import { envoyerStocks, lireStocksShopify, produitsGeres, quantiteStock } from './stocks.js';
+import { articlesExistants, connecterSage, depotsStock, lireStocks } from './sage.js';
+import { emplacementParDefaut, lireFamillesShopify, variantesGerees } from './familles.js';
+import { envoyerStocks, quantiteStock } from './stocks.js';
 import { misesAZeroSuspectes } from './regles.js';
 
 const { values: args } = parseArgs({
@@ -38,48 +40,55 @@ let pool;
 try {
   const client = creerClient(configShopify());
   const locationId = await emplacementParDefaut(client);
+  const familles = await lireFamillesShopify(client, locationId);
+  const variantes = variantesGerees(familles).filter((v) => v.sku);
+  const protegees = familles.filter((f) => !f.proprietaire || f.ignore).reduce((n, f) => n + f.variantes.length, 0);
+
   pool = await connecterSage();
-  const [stocksSage, tous] = await Promise.all([lireStocks(pool), lireStocksShopify(client, locationId)]);
-  // Seulement les produits créés par le connecteur, hors « sage-ignorer » : les autres ne sont jamais modifiés
-  const produits = produitsGeres(tous);
-  const proteges = tous.length - produits.length;
+  const [stocksSage, articles] = await Promise.all([lireStocks(pool), articlesExistants(pool, variantes.map((v) => v.sku))]);
 
   let ecarts = [];
-  const sansStockSage = [];
-  for (const p of produits) {
-    if (!stocksSage.has(p.sku)) {
-      sansStockSage.push(p.sku); // pas de ligne de stock dans Sage : on ne met surtout pas le stock à 0
+  const sansStock = [];
+  const inconnues = [];
+  for (const v of variantes) {
+    const article = articles.get(v.sku);
+    if (!article) {
+      inconnues.push(v.sku); // SKU absent de Sage : on ne touche pas au stock
       continue;
     }
-    const sage = quantiteStock(stocksSage.get(p.sku));
-    if (!p.suivi || p.disponible !== sage) ecarts.push({ ...p, sage });
+    let sage;
+    if (article.AR_Sommeil !== 0) sage = 0; // en sommeil : plus vendable
+    else if (stocksSage.has(v.sku)) sage = quantiteStock(stocksSage.get(v.sku));
+    else {
+      sansStock.push(v.sku);
+      continue;
+    }
+    if (!v.suivi || v.disponible !== sage) ecarts.push({ ...v, sage });
   }
 
-  console.log(`${produits.length} produit(s) Sage dans Shopify — ${ecarts.length} stock(s) différent(s) de Sage`);
-  if (proteges) console.log(`  ${proteges} produit(s) protégé(s) non modifié(s) (sage-ignorer ou non créés par le connecteur)`);
-  if (sansStockSage.length) console.log(`  ${sansStockSage.length} sans ligne de stock dans Sage (non modifiés)`);
+  console.log(`${variantes.length} variante(s) gérée(s) — ${ecarts.length} stock(s) différent(s) de Sage (dépôt(s) ${depotsStock().join(' + ')})`);
+  if (protegees) console.log(`  ${protegees} variante(s) protégée(s) non modifiée(s) (sage-ignorer ou non créées par le connecteur)`);
+  if (sansStock.length) console.log(`  ${sansStock.length} sans ligne de stock dans Sage (non modifiées)`);
+  if (inconnues.length) console.log(`  ${inconnues.length} SKU inconnu(s) dans Sage (non modifiés) : ${inconnues.slice(0, 10).join(', ')}`);
 
-  // Garde-fou : trop de produits qui tombent à 0 d'un coup = anomalie probable (table de stock vide, mauvaise base…)
+  // Garde-fou : trop de variantes qui tombent à 0 d'un coup = anomalie probable (table de stock vide, mauvaise base…)
   let bloques = [];
   if (!args['forcer-stocks']) {
-    bloques = misesAZeroSuspectes(ecarts, produits.filter((p) => p.suivi).length);
+    bloques = misesAZeroSuspectes(ecarts, variantes.filter((v) => v.suivi).length);
     if (bloques.length) {
       const refs = new Set(bloques.map((b) => b.sku));
       ecarts = ecarts.filter((e) => !refs.has(e.sku));
       console.warn(
-        `⚠ Mise à zéro bloquée : ${bloques.length} produits passeraient d'un coup à 0 en stock (anomalie probable côté Sage). ` +
+        `⚠ Mise à zéro bloquée : ${bloques.length} variantes passeraient d'un coup à 0 en stock (anomalie probable côté Sage). ` +
           `Les autres écarts sont appliqués. Vérifier Sage, puis relancer avec --forcer-stocks si c'est voulu.`,
       );
     }
   }
-  if (ecarts.length) {
-    console.table(ecarts.map((e) => ({ sku: e.sku, shopify: e.disponible, sage: e.sage })));
-  }
+  if (ecarts.length) console.table(ecarts.map((e) => ({ famille: e.famille, sku: e.sku, shopify: e.disponible, sage: e.sage })));
   if (args.simulation || ecarts.length === 0) terminer(bloques.length ? 1 : 0);
 
   // Suivi de stock à activer d'abord pour les variantes qui ne l'ont pas : inventorySetQuantities l'exige.
-  const nonSuivis = ecarts.filter((e) => !e.suivi);
-  for (const e of nonSuivis) {
+  for (const e of ecarts.filter((x) => !x.suivi)) {
     const { data } = await client.requete(
       `mutation($id: ID!) { inventoryItemUpdate(id: $id, input: { tracked: true }) { userErrors { message } } }`,
       { id: e.inventoryItemId },
@@ -99,7 +108,7 @@ try {
   await mkdir('sortie', { recursive: true });
   const rapport = `sortie/synchro-stocks-${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
   await writeFile(rapport, JSON.stringify({
-    ecarts: ecarts.map(({ sku, disponible, sage }) => ({ sku, avant: disponible, apres: sage })),
+    ecarts: ecarts.map(({ sku, famille, disponible, sage }) => ({ sku, famille, avant: disponible, apres: sage })),
     misesAZeroBloquees: bloques.map(({ sku, disponible }) => ({ sku, avant: disponible })),
     erreurs,
   }, null, 2));

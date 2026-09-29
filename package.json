@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "produits": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-produits.js",
+    "catalogue": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-catalogue.js",
     "commandes": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-commandes.js",
     "verifier": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-verifier.js",
     "stocks": "node --env-file-if-exists=.env --env-file-if-exists=../env.local src/cli-stocks.js",

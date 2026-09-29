@@ -1,12 +1,13 @@
-// Synchro complète Sage -> Shopify : npm run synchro -- [--poc] [--tout] [--ref AR_Ref] [--simulation]
-// 1. produits : crée les manquants, met à jour les modifiés, retire ceux qui ne sont plus à publier
-// 2. stocks   : corrige les stocks qui diffèrent de Sage
-// L'étape 2 est lancée même si l'étape 1 a rencontré des erreurs.
+// Synchro Sage -> Shopify, à planifier toutes les 15 min : npm run synchro -- [--catalogue] [--simulation]
+// 1. catalogue : familles, variantes, prix — une fois par jour (CATALOGUE_INTERVALLE_HEURES), ou avec --catalogue
+// 2. stocks    : à chaque passage, corrige les stocks qui diffèrent de Sage
+// 3. commandes : Shopify -> Sage (COMMANDES_MODE, désactivé par défaut)
+// Chaque étape est lancée même si la précédente a rencontré des erreurs.
 // Tout est écrit dans logs/synchro-AAAA-MM-JJ.log ; journaux et rapports de plus de JOURS_CONSERVATION jours sont supprimés.
 
 import { spawn } from 'node:child_process';
 import { createWriteStream } from 'node:fs';
-import { mkdir, readdir, stat, unlink } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, unlink } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -15,6 +16,8 @@ import { libererVerrou, prendreVerrou, synchroEnCours } from './suivi.js';
 
 const RACINE = fileURLToPath(new URL('..', import.meta.url));
 const JOURS_CONSERVATION = Number(process.env.JOURS_CONSERVATION) || 30;
+// Catalogue et prix : une fois par jour (note du 24/09). Les stocks passent à chaque synchro.
+const CATALOGUE_INTERVALLE_HEURES = Number(process.env.CATALOGUE_INTERVALLE_HEURES) || 24;
 
 // Lancé par une tâche planifiée, le dossier courant peut être n'importe où : on se place à la racine du connecteur.
 process.chdir(RACINE);
@@ -24,12 +27,9 @@ if (args.includes('--help')) {
   console.log(`
 Usage : npm run synchro -- [options]
 
-  (sans option)     produits (modifiés, absents, à retirer) puis tous les stocks
-  --poc             limite les produits au périmètre « prêts POC »
-  --tout            renvoie tous les produits publiables
-  --ref AR_Ref      un article précis (pas de retrait)
+  (sans option)     stocks, et catalogue (familles, variantes, prix) s'il n'a pas tourné depuis ${CATALOGUE_INTERVALLE_HEURES} h
+  --catalogue       passe aussi le catalogue maintenant
   --simulation      n'envoie rien à Shopify
-  --forcer-retrait  autorise un retrait massif
   --forcer-prix     applique les variations de prix de plus de 50 %
   --forcer-stocks   applique une mise à zéro massive des stocks
 
@@ -76,18 +76,15 @@ async function nettoyer(dossier, limite) {
   return supprimes;
 }
 
-const valeurRef = args.includes('--ref') ? args[args.indexOf('--ref') + 1] : null;
+const etatCatalogue = JSON.parse(await readFile(path.join('etat', 'catalogue.json'), 'utf8').catch(() => '{}'));
+const catalogueDu = args.includes('--catalogue') || !etatCatalogue.dernier ||
+  Date.now() - new Date(etatCatalogue.dernier).getTime() >= CATALOGUE_INTERVALLE_HEURES * 3600 * 1000;
 const etapes = [
-  {
-    titre: 'Produits',
-    script: 'cli-produits.js',
-    args: [
-      ...args.filter((a) => ['--poc', '--tout', '--simulation', '--forcer-retrait', '--forcer-prix'].includes(a)),
-      ...(valeurRef ? ['--ref', valeurRef] : []),
-    ],
-  },
+  ...(catalogueDu
+    ? [{ titre: 'Catalogue', script: 'cli-catalogue.js', args: args.filter((a) => ['--simulation', '--forcer-prix'].includes(a)) }]
+    : []),
   { titre: 'Stocks', script: 'cli-stocks.js', args: args.filter((a) => ['--simulation', '--forcer-stocks'].includes(a)) },
-  // En dernier : une erreur sur les commandes ne peut ni empêcher ni retarder la mise à jour des produits et stocks.
+  // En dernier : une erreur sur les commandes ne peut ni empêcher ni retarder la mise à jour du catalogue et des stocks.
   // Chaque étape est un processus séparé : un plantage de l'une n'arrête pas les autres.
   { titre: 'Commandes', script: 'cli-commandes-sage.js', args: args.filter((a) => a === '--simulation') },
 ];

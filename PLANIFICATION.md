@@ -38,10 +38,11 @@ Le connecteur lit Sage avec le pilote `msnodesqlv8`, qui ne fonctionne **que sou
    Pour tester les e-mails sans rien envoyer : `SMTP_HOST=fichier`. Les e-mails sont alors écrits dans `sortie/emails/`, et on peut les ouvrir avec Outlook.
 4. **Commandes vers Sage, option B (Objets Métiers).** Le client Sage et les Objets Métiers doivent être installés sur ce serveur, dans la même version que Sage. Renseigner les `OM_*` du `.env`, puis vérifier avec `npm run commandes-mode`. Si le mode est « prêt » : `npm run commandes-mode -- objets-metiers`.
    **Commandes vers Sage, option A (zone tampon).** Créer la zone tampon (`sqlcmd -S <serveur> -E -i sql\tampon-commandes.sql -f 65001`). Donner au compte du connecteur `db_datareader` + `db_datawriter` **sur cette base seulement**, puis mettre `COMMANDES_MODE=tampon` dans `.env`. La base Sage reste en lecture seule.
-5. **Première synchro, à la main.** Elle fixe le périmètre : `--poc` pour les produits prêts, `--tout` pour tout le catalogue publiable.
+5. **Première synchro, à la main.** Elle crée les familles de `CATALOGUE_FAMILLES` sur la boutique.
    ```bat
-   npm run synchro -- --simulation --tout
-   npm run synchro -- --tout
+   npm run catalogue -- --simulation
+   npm run catalogue
+   npm run stocks
    ```
    Contrôler ensuite dans l'admin Shopify et avec `npm run verifier`.
 

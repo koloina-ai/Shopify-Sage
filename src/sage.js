@@ -7,94 +7,64 @@ export async function connecterSage() {
   return sql.connect({ connectionString: chaineConnexionSage() });
 }
 
-/**
- * Articles publiables sur Shopify : actifs, cochés « publié sur le site marchand », avec un prix de vente.
- * Le stock est le disponible du dépôt principal (DP_STOCKS) ; NULL si l'article n'a pas de ligne de stock.
- *
- * @param {object} options
- * @param {Date}   [options.depuis]  seulement les articles modifiés après cette date (cbModification)
- * @param {string[]} [options.refs]  seulement ces références
- * @param {boolean} [options.avecStock]  seulement les articles ayant une ligne de stock
- */
-export async function lireArticles(pool, { depuis, refs, avecStock } = {}) {
-  const req = pool.request();
-  const filtres = ['a.AR_Sommeil = 0', 'a.AR_Publie = 1', 'a.AR_PrixVen > 0'];
-  if (depuis) {
-    req.input('depuis', sql.DateTime, depuis);
-    filtres.push('a.cbModification > @depuis');
-  }
-  if (refs?.length) {
-    refs.forEach((r, i) => req.input(`ref${i}`, sql.VarChar(19), r));
-    filtres.push(`a.AR_Ref IN (${refs.map((_, i) => `@ref${i}`).join(', ')})`);
-  }
-  if (avecStock) filtres.push('s.stock_dispo IS NOT NULL');
+/** Dépôts dont le stock est additionné : STOCK_DEPOTS (intitulés séparés par des virgules), par défaut « Magasin SODICO ». */
+export const depotsStock = () =>
+  (process.env.STOCK_DEPOTS || 'Magasin SODICO').split(',').map((d) => d.trim()).filter(Boolean);
 
+/** Familles synchronisées : CATALOGUE_FAMILLES (codes séparés par des virgules, ou * pour toutes). */
+export const famillesCatalogue = () =>
+  (process.env.CATALOGUE_FAMILLES || '').split(',').map((f) => f.trim()).filter(Boolean);
+
+function filtreFamilles(req, familles) {
+  if (familles.includes('*')) return '1 = 1';
+  familles.forEach((f, i) => req.input(`fam${i}`, sql.VarChar(11), f));
+  return `a.FA_CodeFamille IN (${familles.map((_, i) => `@fam${i}`).join(', ')})`;
+}
+
+function filtreDepots(req, depots) {
+  depots.forEach((d, i) => req.input(`dep${i}`, sql.VarChar(35), d));
+  return `STO_DEP IN (${depots.map((_, i) => `@dep${i}`).join(', ')})`;
+}
+
+/**
+ * Articles des familles synchronisées, y compris ceux en sommeil (pour mettre leur stock à 0 sur la boutique).
+ * stock_dispo : somme du disponible des dépôts choisis ; NULL si l'article n'y a aucune ligne de stock.
+ * @param {string[]} familles  codes FA_CodeFamille, ou ['*']
+ */
+export async function lireArticlesFamilles(pool, familles, depots = depotsStock()) {
+  if (!familles.length) throw new Error('Aucune famille à synchroniser : renseigner CATALOGUE_FAMILLES (codes famille Sage, ou *)');
+  const req = pool.request();
   const { recordset } = await req.query(`
-    SELECT a.AR_Ref, a.AR_Design, a.AR_PrixVen, a.AR_CodeBarre, a.FA_CodeFamille, a.AR_Stat02, a.AR_Stat04,
-           a.AR_PoidsBrut, a.AR_PoidsNet, a.AR_UnitePoids, a.AR_SuiviStock, a.cbModification,
-           s.stock_dispo
+    SELECT a.AR_Ref, a.AR_Design, ISNULL(a.AR_PrixVen, 0) AS AR_PrixVen, a.AR_CodeBarre, a.FA_CodeFamille, a.AR_Sommeil,
+           a.cbModification, s.stock_dispo
     FROM dbo.F_ARTICLE a
     LEFT JOIN (
         SELECT STO_ART_NUM, SUM(STO_DISPO) AS stock_dispo
         FROM dbo.DP_STOCKS
-        WHERE STO_DEPPRINC = 'OUI'
+        WHERE ${filtreDepots(req, depots)}
         GROUP BY STO_ART_NUM
     ) s ON s.STO_ART_NUM = a.AR_Ref
-    WHERE ${filtres.join(' AND ')}
-    ORDER BY a.cbModification, a.AR_Ref`);
+    WHERE ${filtreFamilles(req, familles)}
+    ORDER BY a.FA_CodeFamille, a.AR_Ref`);
   return recordset;
 }
 
-/**
- * Pourquoi des articles ne sont plus à publier (pour le journal des retraits).
- * @returns {Map<string, string>} référence -> raison
- */
-export async function raisonsRetrait(pool, refs) {
-  const raisons = new Map(refs.map((r) => [r, 'supprimé de Sage']));
-  for (let i = 0; i < refs.length; i += 500) {
-    const lot = refs.slice(i, i + 500);
-    const req = pool.request();
-    lot.forEach((r, j) => req.input(`r${j}`, sql.VarChar(19), r));
-    const { recordset } = await req.query(`
-      SELECT a.AR_Ref, a.AR_Sommeil, a.AR_Publie, a.AR_PrixVen, a.AR_Design, a.AR_CodeBarre,
-             CASE WHEN EXISTS (SELECT 1 FROM dbo.DP_STOCKS s WHERE s.STO_ART_NUM = a.AR_Ref AND s.STO_DEPPRINC = 'OUI')
-                  THEN 1 ELSE 0 END AS a_stock
-      FROM dbo.F_ARTICLE a
-      WHERE a.AR_Ref IN (${lot.map((_, j) => `@r${j}`).join(', ')})`);
-    for (const a of recordset) {
-      raisons.set(a.AR_Ref, a.AR_Sommeil !== 0 ? 'mis en sommeil' : a.AR_Publie !== 1 ? 'décoché « publié »' : blocage(a, 'poc')?.raison ?? 'hors périmètre');
-    }
-  }
-  return raisons;
-}
-
-/**
- * Pourquoi un article actif et « publié » n'est pas en ligne, et quoi corriger dans Sage. null s'il est publiable.
- * Mêmes règles que la sélection de lireArticles (+ filtre POC de cli-produits).
- * @param {{ AR_PrixVen: number, AR_Design: string, AR_CodeBarre: string, a_stock: number }} a
- */
-export function blocage(a, perimetre) {
-  if (!(a.AR_PrixVen > 0)) return { raison: 'pas de prix de vente', aCorriger: 'Fiche article → Prix de vente' };
-  if (perimetre !== 'poc') return null;
-  if (!a.a_stock) return { raison: 'pas de stock au dépôt principal', aCorriger: 'Stock de l\'article au dépôt principal' };
-  if (!ean13Valide(a.AR_CodeBarre)) return { raison: 'code-barre invalide', aCorriger: 'Fiche article → Code barre (13 chiffres, clé de contrôle)' };
-  if (a.AR_Design.trim().length < 4) return { raison: 'désignation trop courte', aCorriger: 'Fiche article → Désignation' };
-  return null;
-}
-
-/** Articles actifs et cochés « publié » qui ne sont pas envoyés sur Shopify, avec la raison. */
-export async function articlesBloques(pool, perimetre) {
-  const { recordset } = await pool.request().query(`
-    SELECT a.AR_Ref, a.AR_Design, a.AR_PrixVen, a.AR_CodeBarre,
-           CASE WHEN EXISTS (SELECT 1 FROM dbo.DP_STOCKS s WHERE s.STO_ART_NUM = a.AR_Ref AND s.STO_DEPPRINC = 'OUI')
-                THEN 1 ELSE 0 END AS a_stock
+/** Articles actifs des familles synchronisées sans prix de vente : non mis en ligne, à corriger dans Sage. */
+export async function articlesBloques(pool, familles) {
+  if (!familles.length) return [];
+  const req = pool.request();
+  const { recordset } = await req.query(`
+    SELECT a.AR_Ref, a.AR_Design, a.FA_CodeFamille
     FROM dbo.F_ARTICLE a
-    WHERE a.AR_Sommeil = 0 AND a.AR_Publie = 1
-    ORDER BY a.AR_Ref`);
-  return recordset.flatMap((a) => {
-    const b = blocage(a, perimetre);
-    return b ? [{ ref: a.AR_Ref, designation: a.AR_Design.trim(), ...b }] : [];
-  });
+    WHERE a.AR_Sommeil = 0 AND ISNULL(a.AR_PrixVen, 0) <= 0 AND ${filtreFamilles(req, familles)}
+    ORDER BY a.FA_CodeFamille, a.AR_Ref`);
+  return recordset.map((a) => ({
+    ref: a.AR_Ref,
+    designation: a.AR_Design.trim(),
+    raison: "pas de prix de vente",
+    famille: a.FA_CodeFamille,
+    aCorriger: 'Fiche article → Prix de vente',
+  }));
 }
 
 async function parLots(pool, valeurs, type, requete) {
@@ -123,12 +93,13 @@ export async function clientsExistants(pool, codes) {
   return new Map(lignes.map((c) => [c.CT_Num, c]));
 }
 
-/** Stock disponible du dépôt principal, par référence article. */
-export async function lireStocks(pool) {
-  const { recordset } = await pool.request().query(`
+/** Stock disponible des dépôts choisis (STOCK_DEPOTS), par référence article. */
+export async function lireStocks(pool, depots = depotsStock()) {
+  const req = pool.request();
+  const { recordset } = await req.query(`
     SELECT STO_ART_NUM, SUM(STO_DISPO) AS stock_dispo
     FROM dbo.DP_STOCKS
-    WHERE STO_DEPPRINC = 'OUI'
+    WHERE ${filtreDepots(req, depots)}
     GROUP BY STO_ART_NUM`);
   return new Map(recordset.map((r) => [r.STO_ART_NUM, r.stock_dispo]));
 }

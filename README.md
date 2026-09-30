@@ -4,7 +4,7 @@ Node.js 22+. Lit Sage 100 (SQL Server, lecture seule) et parle à Shopify via l'
 
 ## Configuration
 
-Variables lues dans `.env` puis `../env.local` :
+Variables lues dans `.env` :
 
 | Variable | Rôle |
 |---|---|
@@ -87,7 +87,7 @@ Variables `SMTP_*`, `ALERTE_A` (voir `.env.example`) ; sans elles, rien n'est en
 état 🟢/🔴/🟠/🔄 avec diagnostic en clair, bouton « Synchroniser maintenant » (lance `cli-synchro.js`, comme la tâche
 planifiée), changements 24 h, historique 48 h, articles bloqués (recherche + export CSV).
 
-- Par défaut sur `http://localhost:3000` uniquement. `INTERFACE_HOTE=0.0.0.0` + `INTERFACE_MOT_DE_PASSE` (Basic Auth) pour le réseau local.
+- Par défaut sur ce poste uniquement : `http://sage-shopify-connector.localhost:3000` (ou `http://localhost:3000`). `INTERFACE_HOTE=0.0.0.0` + `INTERFACE_MOT_DE_PASSE` (Basic Auth) pour le réseau local.
 - API : `GET /api/etat`, `/api/historique?heures=48`, `/api/changements?heures=24`, `/api/bloques`, `/api/bloques.csv`,
   `POST /api/synchro` (en-tête `X-Connecteur: 1` requis ; 409 si une synchro tourne).
 - Verrou `etat/synchro.lock` : une seule synchro à la fois, quelle que soit l'origine (tâche, bouton, terminal).
@@ -142,8 +142,10 @@ Les deux options utilisent la même étiquette `sage-transmise` : une commande t
 ## Journal et planification
 
 `npm run synchro` écrit tout dans `logs/synchro-AAAA-MM-JJ.log` (horodaté, `ERR` pour les erreurs) et supprime
-journaux et rapports de plus de `JOURS_CONSERVATION` jours (30 par défaut). Installation de la tâche toutes les
-15 minutes : voir [PLANIFICATION.md](PLANIFICATION.md).
+journaux et rapports de plus de `JOURS_CONSERVATION` jours (30 par défaut).
+
+**Démarrage automatique sous Windows** : double-clic sur `installer-auto.bat` (synchro toutes les 15 min, résumé à 7 h,
+page de suivi au démarrage de Windows ; `desinstaller-auto.bat` pour tout arrêter). Détails : [PLANIFICATION.md](PLANIFICATION.md).
 
 ## Limites connues
 

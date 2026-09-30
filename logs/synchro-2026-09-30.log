@@ -1,0 +1,24 @@
+2026-09-30 15:10:22 === Synchro Sage -> Shopify --catalogue ===
+2026-09-30 15:10:22 --- 1/3 Catalogue ---
+2026-09-30 15:11:02 Familles : toutes — 5612 article(s) Sage, dépôt(s) Magasin SODICO
+2026-09-30 15:11:02 À faire : 0 famille(s) à créer (0 variantes), 0 variante(s) à ajouter, 1 variante(s) à mettre à jour, 0 prix bloqué(s), 2204 signalement(s)
+2026-09-30 15:11:03 Familles créées : 0   Variantes ajoutées : 0   Mises à jour : 1   Erreurs : 0
+2026-09-30 15:11:03   ℹ 2204 × pas de prix de vente dans Sage : variante non créée
+2026-09-30 15:11:03 Rapport : sortie/synchro-catalogue-2026-09-30T12-11-03-120Z.json
+2026-09-30 15:11:03 --- 2/3 Stocks ---
+2026-09-30 15:11:47 1360 variante(s) gérée(s) — 5 stock(s) différent(s) de Sage (dépôt(s) Magasin SODICO)
+2026-09-30 15:11:47   1194 sans ligne de stock dans Sage (non modifiées)
+2026-09-30 15:11:47 ┌─────────┬───────────┬──────────────┬─────────┬──────┐
+2026-09-30 15:11:47 │ (index) │ famille   │ sku          │ shopify │ sage │
+2026-09-30 15:11:47 ├─────────┼───────────┼──────────────┼─────────┼──────┤
+2026-09-30 15:11:47 │ 0       │ '02TOLE'  │ '02540112'   │ 5591    │ 500  │
+2026-09-30 15:11:47 │ 1       │ '03AMB'   │ '035202024'  │ 10      │ 96   │
+2026-09-30 15:11:47 │ 2       │ '03AMB'   │ '03520224'   │ 272     │ 10   │
+2026-09-30 15:11:47 │ 3       │ '03PORTE' │ '035008521'  │ 10      │ 200  │
+2026-09-30 15:11:47 │ 4       │ '03PORTE' │ '0352020012' │ 5       │ 50   │
+2026-09-30 15:11:47 └─────────┴───────────┴──────────────┴─────────┴──────┘
+2026-09-30 15:11:47 Mis à jour : 5   Erreurs : 0
+2026-09-30 15:11:47 Rapport : sortie/synchro-stocks-2026-09-30T12-11-47-562Z.json
+2026-09-30 15:11:47 --- 3/3 Commandes ---
+2026-09-30 15:11:47 Synchro des commandes désactivée (COMMANDES_MODE=off)
+2026-09-30 15:11:59 === OK en 97.3 s : Catalogue ✓   Stocks ✓   Commandes ✓ ===

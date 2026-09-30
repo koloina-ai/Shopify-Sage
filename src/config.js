@@ -1,8 +1,8 @@
-// Configuration lue dans les variables d'environnement (.env ou ../env.local).
+// Configuration lue dans les variables d'environnement (fichier .env du connecteur).
 
 export function configShopify() {
   return {
-    // Noms alternatifs : ceux du env.local partagé avec Talend / Postman
+    // Noms alternatifs : ceux utilisés par Talend / Postman
     store: process.env.SHOPIFY_STORE || process.env.SHOPIFY_STORE_URL,
     apiVersion: process.env.SHOPIFY_API_VERSION || '2026-07',
     accessToken: process.env.SHOPIFY_ACCESS_TOKEN || process.env.SHOPIFY_STORE_API_TOKEN,

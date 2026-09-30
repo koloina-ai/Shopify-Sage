@@ -50,6 +50,25 @@ Le connecteur lit Sage avec le pilote `msnodesqlv8`, qui ne fonctionne **que sou
 
 ## 2. Windows : Planificateur de tâches
 
+### Installation automatique (recommandé)
+
+Double-cliquer sur **`installer-auto.bat`** dans le dossier `connecteur/`, puis accepter la demande de droits administrateur. Le script crée trois tâches, qui tournent **sans session ouverte et sans fenêtre** :
+
+| Tâche | Quand | Commande (reprise de `package.json`) |
+|---|---|---|
+| `Connecteur Sage Shopify - synchro` | toutes les 15 min (catalogue et prix 1 fois par jour) | `npm run synchro` |
+| `Connecteur Sage Shopify - resume` | chaque jour à 7 h | `npm run resume` |
+| `Connecteur Sage Shopify - page de suivi` | au démarrage de Windows, relancée si elle s'arrête | `npm run interface` (journal : `logs/page-de-suivi.log`) |
+
+- Un raccourci **« Connecteur Sage Shopify »** est posé sur le Bureau : il ouvre la page de suivi dans le navigateur. Rien d'autre à lancer.
+- Relancer le script remplace les tâches existantes. Il arrête aussi une page de suivi ouverte à la main (`npm run interface`), sinon le port serait déjà pris.
+- Options : `installer-auto.bat -IntervalleMinutes 10 -HeureResume 06:30`.
+- **Sage sur un autre serveur** (authentification Windows) : `installer-auto.bat -CompteReseau`. Le mot de passe du compte est demandé et enregistré par Windows. Sans cette option, aucun mot de passe n'est stocké, mais les tâches ne peuvent joindre qu'un SQL Server **local**.
+- Le poste doit rester allumé, et sans mise en veille. Une synchro manquée pendant l'arrêt est lancée au redémarrage.
+- Pour tout arrêter : double-cliquer sur **`desinstaller-auto.bat`**.
+
+Les commandes ci-dessous restent valables pour une installation à la main.
+
 ### Commande à lancer (PowerShell en administrateur)
 
 Adapter les deux chemins et le compte Windows. Ce compte doit avoir le droit de **lire** la base Sage.

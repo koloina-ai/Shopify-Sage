@@ -1,5 +1,5 @@
 // Page de suivi du connecteur, dans le navigateur : npm run interface
-// Par défaut accessible uniquement depuis ce poste (http://localhost:3000).
+// Par défaut accessible uniquement depuis ce poste (http://sage-shopify-connector.localhost:3000 ou http://localhost:3000).
 // INTERFACE_HOTE=0.0.0.0 pour l'ouvrir au réseau local — mettre alors un INTERFACE_MOT_DE_PASSE.
 
 import { createServer } from 'node:http';
@@ -127,7 +127,7 @@ async function historique(heures) {
 // Journal, verrou et alertes identiques à la tâche planifiée. Arguments repris de package.json (node lancé
 // directement : npm.cmd exigerait un shell sous Windows).
 const SCRIPT_SYNCHRO = 'synchro-catalogue';
-const FICHIERS_ENV = ['.env', '../env.local'];
+const FICHIERS_ENV = ['.env'];
 // Variables venues des fichiers .env au démarrage de la page : retirées de l'environnement transmis, pour que la synchro
 // relise les fichiers à chaque clic (un .env modifié s'applique sans redémarrer la page, une ligne supprimée aussi).
 const VARIABLES_FICHIERS = new Map(
@@ -153,6 +153,9 @@ async function lancerSynchro() {
 // ---------- Sécurité HTTP ----------
 
 const LOCAL = ['127.0.0.1', 'localhost', '::1'];
+// Adresse lisible sur ce poste : les navigateurs envoient toujours *.localhost vers le poste lui-même (sans fichier
+// hosts), et aucun site d'Internet ne peut porter ce nom.
+const NOM_LOCAL = 'sage-shopify-connector.localhost';
 const EXPOSEE = !LOCAL.includes(HOTE);
 if (EXPOSEE && !MOT_DE_PASSE && process.env.INTERFACE_SANS_MOT_DE_PASSE !== 'oui') {
   console.error(
@@ -164,10 +167,11 @@ if (EXPOSEE && !MOT_DE_PASSE && process.env.INTERFACE_SANS_MOT_DE_PASSE !== 'oui
 
 // Noms sous lesquels la page peut être appelée. Refuser les autres bloque le « DNS rebinding »
 // (un site piégé qui se fait passer pour ce serveur afin de lire les données ou de lancer une synchro).
-// Autorisés automatiquement : localhost, le nom du serveur (court ou complet) et ses adresses IP.
+// Autorisés automatiquement : localhost, NOM_LOCAL, le nom du serveur (court ou complet) et ses adresses IP.
 const NOM_MACHINE = os.hostname().toLowerCase();
 const NOMS_AUTORISES = new Set([
   ...LOCAL,
+  NOM_LOCAL,
   NOM_MACHINE,
   ...Object.values(os.networkInterfaces()).flat().map((i) => i.address.toLowerCase()),
   ...(process.env.INTERFACE_NOMS || '').split(',').map((n) => n.trim().toLowerCase()).filter(Boolean),
@@ -273,7 +277,7 @@ const serveur = createServer(async (req, res) => {
 });
 
 serveur.listen(PORT, HOTE, () => {
-  const adresse = EXPOSEE ? `http://${NOM_MACHINE}:${PORT}` : `http://localhost:${PORT}`;
+  const adresse = EXPOSEE ? `http://${NOM_MACHINE}:${PORT}` : `http://${NOM_LOCAL}:${PORT}`;
   console.log(`Page de suivi du connecteur : ${adresse}`);
   if (EXPOSEE && !MOT_DE_PASSE) console.warn('⚠ Page ouverte au réseau SANS mot de passe (INTERFACE_SANS_MOT_DE_PASSE=oui)');
 });
